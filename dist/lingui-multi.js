@@ -4,7 +4,7 @@ const compile = require('@lingui/cli/api/compile');
 const extract = require('@lingui/cli/api/extract');
 const commander = require('commander');
 const rimraf = require('rimraf');
-
+const tmp = require('tmp');
 const _ = require('lodash');
 
 const path = require('path');
@@ -22,7 +22,7 @@ commander.version(require("../package.json").version).arguments("[package-json] 
 
 if (typeof package === 'undefined')
 {
-    console.info('no package.json path supplied, using default: ./package.json');
+    console.info('No package.json path supplied, using default: ./package.json');
     package = './package.json';
 }
 
@@ -38,7 +38,7 @@ packageObject = JSON.parse(fs.readFileSync(package));
 
 if (typeof localeDir === 'undefined')
 {
-    console.info('no locale directory path supplied, using default: ./locale');
+    console.info('No locale directory path supplied, using default: ./locale');
     localeDir = './locale';
 }
 
@@ -65,14 +65,11 @@ if (!('lingui-multi' in packageObject))
 }
 
 
+
 // The directory where we are going to do the extract/collect
-const targetDir = './lingui-multi';
+// const targetDir = './lingui-multi';
 console.info("Creating temporary build directory");
-
-// Create target dir if not exist
-if (fs.existsSync(targetDir) === false)
-    fs.mkdirSync(targetDir);
-
+const targetDir = tmp.dirSync().name;
 
 let buildDir = targetDir + '/_build';
 
@@ -154,8 +151,5 @@ for (bundle in packageObject['lingui-multi'])
 
 }
 
-// Cleanup
-console.info("Removing temporary build directory");
-rimraf.sync(targetDir);
 console.info("Done");
 
