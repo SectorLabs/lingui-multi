@@ -1,5 +1,5 @@
 # Lingui Multi
-This is a command line utility for generating multiple catalog files from a single (unified) messages JSON file using js-lingui. Please ensure your application uses js-lingui before attempting to use this utility.
+This is a command line utility for generating multiple catalog files from a single (unified) messages JSON file using [js-lingui cli api](https://www.npmjs.com/package/@lingui/cli). Please ensure your application uses js-lingui before attempting to use this utility.
 
 # Setup
 Add the following to your project's package.json file:
