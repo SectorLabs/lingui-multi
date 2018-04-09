@@ -147,11 +147,11 @@ for (bundle in packageObject['lingui-multi'])
 
         let jsData = compile.createCompiledCatalog(locale, screenedMessages);
 
-        let targetFile = util.format('%s/%s/%s.js', localeDir, locale, bundle);
+        let targetFile = util.format('%s/%s/%s.messages.js', localeDir, locale, bundle);
 
         fs.writeFileSync(targetFile, jsData);
 
-        console.info(util.format('Wrote %d messages to %s/%s.messages.js', Object.keys(screenedMessages).length, locale, bundle));
+        console.info(util.format('Wrote %d messages to %s', Object.keys(screenedMessages).length, targetFile));
     });
 
 }
