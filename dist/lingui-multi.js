@@ -120,7 +120,7 @@ for (bundle in packageObject['lingui-multi'])
 
     extract.extract(options.srcPathDirs, targetDir, options);
 
-    let catalogObject = extract.collect(buildDir);
+    let catalogObject = extract.collect(targetDir);
 
     let keys = Object.keys(catalogObject);
 
