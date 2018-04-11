@@ -1,20 +1,20 @@
 {
-  "name": "@abhashmi/lingui-multi",
+  "name": "lingui-multi",
   "version": "1.0.6",
   "description": "Command line utility to compile multiple catalogs from a single js-lingui messages.json file.",
   "repository": {
-    "url": "git+https://github.com/ahmed-belal/lingui-multi.git",
+    "url": "git+https://github.com/SectorLabs/lingui-multi.git",
     "type": "git"
   },
   "bugs": {
-    "url": "https://github.com/ahmed-belal/lingui-multi/issues"
+    "url": "https://github.com/SectorLabs/lingui-multi/issues"
   },
   "main": "./dist/lingui-multi.js",
   "author": {
     "name": "Ahmed Belal Hashmi"
   },
   "license": "MIT",
-  "private": false,
+  "private": true,
   "dependencies": {
     "@lingui/cli": "2.0.1",
     "babel-core": "^6.26.0",
