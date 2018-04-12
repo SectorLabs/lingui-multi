@@ -155,7 +155,7 @@ commander.command('extract [packageFile] [localeDirectory]').action(function (pa
     });
 });
 
-commander.command('compile [packageFile] [localeDirectory]').action(function (packageFile, localeDir)
+commander.command('compile [packageFile] [localeDirectory]').option('-s, --strict', 'Strict compilation').action(function (packageFile, localeDir, args)
 {
     if (typeof packageFile === "undefined")
     {
@@ -196,6 +196,10 @@ commander.command('compile [packageFile] [localeDirectory]').action(function (pa
         console.error("ERROR: No lingui-multi bundles config found");
         process.exit(1);
     }
+
+    // This is to replace the actual `lingui compile` workflow:
+    // introduce a messages.js, file as well
+    packageObject["lingui-multi"]["__replacement"] = {};
 
     // Using strict so implicit vars won"t work
     let bundle;
@@ -252,11 +256,22 @@ commander.command('compile [packageFile] [localeDirectory]').action(function (pa
             let screenedKeys = [];
             for (key in messagesObject)
             {
-                // Filter out ignore patterns
-                if (ignorePattern && ignorePattern.test(messagesObject[key]["origin"][0])) continue;
+                let required = false;
+                
+                let origin;
+
+                messagesObject[key]["origin"].forEach(function (origin)
+                {
+                    // Filter out ignore patterns
+                    if (ignorePattern && ignorePattern.test(origin[0])) return;
+                    
+                    required = true
+                });
+                
 
                 // Gather the keys of interest
-                screenedKeys.push(key);
+                if (required)
+                    screenedKeys.push(key);
             }
 
             let localeTranslationsCount = Object.keys(screenedKeys).length;
@@ -284,13 +299,43 @@ commander.command('compile [packageFile] [localeDirectory]').action(function (pa
             // Grab hold of the minimal format catalog
             let minimalCatalogObject = JSON.parse(fs.readFileSync(minimalCatalogPath));
 
+            if (args.strict && 'sourceLocale' in packageObject.lingui && locale != packageObject.lingui.sourceLocale)
+            {
+                let missingTranslations = [];
+                for (key in minimalCatalogObject)
+                {
+                    if (minimalCatalogObject[key] == '')
+                    {
+                        missingTranslations.push(key);
+                    }
+                }
+
+                if (missingTranslations.length > 0)
+                {
+                    console.error(util.format("\n\nMissing %d translations in locale %s", missingTranslations.length, locale));
+                    missingTranslations.forEach(function (key)
+                    {
+                        console.error(key);
+                    });
+
+                    process.exit(1);
+                }
+            }    
+
             // Pull out translations of interest
             let screenedCatalogObject = _.pick(minimalCatalogObject, screenedKeys);
 
             // Compile the catalog js data
             let jsData = compile.createCompiledCatalog(locale, screenedCatalogObject);
 
-            let targetFile = util.format("%s/%s/%s.messages.js", localeDir, locale, bundle);
+            let targetFile;
+            
+            // @lingui/cli compile replacement
+            if (bundle === '__replacement')
+                targetFile = util.format("%s/%s/messages.js", localeDir, locale);
+            else
+            // @sector-labs/lingui-multi compile workflow    
+                targetFile = util.format("%s/%s/%s.messages.js", localeDir, locale, bundle);
 
             // Write, and done
             fs.writeFileSync(targetFile, jsData);
