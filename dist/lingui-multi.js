@@ -1,349 +1,238 @@
 #! /usr/bin/env node
 
-"use strict";
+'use strict'
 
-const compile = require("@lingui/cli/api/compile");
-const commander = require("commander");
-const extract = require('@lingui/cli/api/extract');
-const tmp = require('tmp');
-const rimraf = require('rimraf');
-const _ = require('lodash');
+const compile = require('@lingui/cli/api/compile')
+const commander = require('commander')
+const extract = require('@lingui/cli/api/extract')
+const tmp = require('tmp')
 
-const path = require("path");
-const util = require("util");
-const fs = require("fs");
+const path = require('path')
+const fs = require('fs')
 
-var packageFile = undefined;
-var localeDir = undefined;
+// Set up version command
+commander.version(require('../package.json').version)
 
-commander.version(require("../package.json").version);
-commander.command('extract [packageFile] [localeDirectory]').action(function (packageFile, localeDir)
-{
-    if (typeof packageFile === 'undefined')
-    {
-        console.info('No package.json path supplied, using default: ./package.json');
-        packageFile = './package.json';
+// Set up extract command
+commander.command('extract [packageFile] [localeDirectory]').action((packageFile = './package.json', localeDir = './locale') => {
+  const packageObject = loadPackageConfig(packageFile)
+
+  const locales = loadLocales(localeDir)
+
+  extractCatalogs(packageFile, packageObject, localeDir, locales)
+})
+
+// Set up compile command
+commander.command('compile [packageFile] [localeDirectory]').option('-s, --strict', 'Strict compilation').action(function (packageFile = './package.json', localeDir = './locale', args = {}) {
+  // 1. Load the config from package.json
+  // 2. Validate the configuration
+  // 3. Inject a special sub-catalog bundle so that a complete
+  //    catalog is generated alongside the sub-catalogs
+  var packageObject = loadPackageConfig(packageFile)
+
+  var locales = loadLocales(localeDir)
+
+  compileCatalogs(packageFile, packageObject, localeDir, locales, args)
+})
+
+function extractCatalogs (packageFile, packageObject, localeDir, locales) {
+  // The directory where we are going to do the extract/collect
+  const targetDir = createTempDirectory()
+
+  let options = Object.assign({}, packageObject.lingui, { srcPathDirs: packageObject.lingui.srcPathDirs.map(srcPath => srcPath.replace('<rootDir>', path.dirname(packageFile))), ignore: packageObject.lingui.srcPathIgnorePatterns || [] })
+
+  extract.extract(options.srcPathDirs, targetDir, options)
+
+  const rawCatalog = extract.collect(targetDir)
+
+  // Prepopulate with empty translations
+  const linguiCatalog = Object.keys(rawCatalog).reduce((final, key) => Object.assign(final, { [key]: Object.assign({ translation: '' }, rawCatalog[key]) }), {})
+
+  // Go over each locale
+  locales.forEach((locale) => {
+    // Just ignore the build directory if it pops up by mistake.
+    if (locale === '_build') return
+
+    // Only continue if locale is a directory
+    if (fs.lstatSync(path.resolve(localeDir, locale)).isDirectory() === false) {
+      return
     }
 
-    console.info('Package json: ' + path.resolve(packageFile));
+    const complexCatalog = Object.assign(linguiCatalog, loadLinguiCatalog(localeDir, locale))
 
-    if (fs.existsSync(packageFile) === false)
-    {
-        console.error('ERROR: package.json does not exist');
-        process.exit(1);
-    }
+    const minimalCatalog = createMinimalCatalog(complexCatalog)
 
-    var packageObject = JSON.parse(fs.readFileSync(packageFile));
+    writeCatalogs(complexCatalog, minimalCatalog, localeDir, locale)
+    console.info(`${locale} ${Object.keys(minimalCatalog).length}`)
+  })
+}
 
-    if (typeof localeDir === 'undefined')
-    {
-        console.info('No locale directory path supplied, using default: ./locale');
-        localeDir = './locale';
-    }
+function compileCatalogs (packageFile, packageObject, localeDir, locales, args) {
+  // Iterate the language catalogs
+  Object.keys(packageObject['lingui-multi']).forEach(catalogName => {
+    console.info(`\n\nCatalog: ${catalogName}`)
+    console.info('================')
 
-    console.info('Locale directory: ' + path.resolve(localeDir));
-
-    if (fs.existsSync(localeDir) === false)
-    {
-        console.error('ERROR: locale directory does not exist');
-        process.exit(1);
-    }
-
-    var locales = fs.readdirSync(localeDir);
-
-    if (!('lingui' in packageObject))
-    {
-        console.error('ERROR: No lingui config found');
-        process.exit(1);
-    }
-
-    if (!('lingui-multi' in packageObject))
-    {
-        console.error('ERROR: No lingui-multi bundles config found');
-        process.exit(1);
-    }
-
-
-
-    // The directory where we are going to do the extract/collect
-    console.info("Creating temporary build directory");
-    const targetDir = tmp.dirSync().name;
-
-    let buildDir = targetDir + '/_build';
-
-    // Create build dir if not exist
-    if (fs.existsSync(buildDir) === false)
-        fs.mkdirSync(buildDir);
-
-    console.info('Build scratchpad directory: ' + path.resolve(buildDir));
-
-    // Remove build dir contents on each run
-    rimraf.sync(buildDir + '/*');
-
-    let options = Object.assign({}, packageObject.lingui);
-
-    let srcPathDirs = packageObject.lingui.srcPathDirs;
-
-    // Dirty patch for <rootDir>
-    options.srcPathDirs = [];
-
-    srcPathDirs.forEach(function (dir)
-    {
-        options.srcPathDirs.push(dir.replace('<rootDir>', path.dirname(packageFile)));
-    });
-
-
-    // Convert from CLI to API keys
-    if ('srcPathIgnorePatterns' in options)
-    {
-        options.ignore = options.srcPathIgnorePatterns;
-    }
-
-    // Discard the old key name (api doesn't use it)
-    delete options.srcPathIgnorePatterns;
-
-    // Extract list of translation keys
-    extract.extract(options.srcPathDirs, targetDir, options);
-
-    let linguiCatalog = extract.collect(targetDir);
-
-    // Again, using strict mode so declare this beforehand
-    let key;
-
-    // Prepopulate with empty translations
-    for (key in linguiCatalog)
-    {
-        // New keys will be with empty translation
-        linguiCatalog[key]['translation'] = '';
-    }
+    // Grab the ignore patterns
+    const ignorePattern = getSubCatalogIgnoreRegex(packageObject, catalogName)
 
     // Go over each locale
-    locales.forEach(function (locale)
-    {
-        // Just ignore the build directory if it pops up by mistake.
-        if (locale === "_build") return;
+    locales.forEach(function (locale) {
+      // Just ignore the build directory if it pops up by mistake.
+      if (locale === '_build') return
 
-        // Only continue if locale is a directory
-        if (fs.lstatSync(path.resolve(localeDir, locale)).isDirectory() === false)
-        {
-            return;
-        }
+      // Only continue if locale is a directory
+      if (fs.lstatSync(path.resolve(localeDir, locale)).isDirectory() === false) {
+        return
+      }
 
-        let filePath = util.format('%s/%s/messages.json', localeDir, locale);
-        if (fs.existsSync(filePath) === false)
-        {
-            console.info(util.format('INFO: File not found for conversion: %s', filePath));
-            return;
-        }
+      const messagesObject = loadLinguiCatalog(localeDir, locale)
 
-        let complexCatalog = {};
-        complexCatalog = Object.assign(linguiCatalog, JSON.parse(fs.readFileSync(filePath)));
+      const screenedKeys = Object.keys(messagesObject).filter(key => messagesObject[key].origin.every(
+        origin => ignorePattern && ignorePattern.test(origin[0]) === false))
 
-        let minimalCatalog = {};
-        for (key in complexCatalog)
-        {
-            minimalCatalog[key] = complexCatalog[key]['translation'];
-        }
+      // Grab hold of the minimal format catalog
+      const minimalCatalogObject = loadMinimalCatalog(localeDir, locale)
 
-        let targetComplexFile = util.format('%s/%s/messages.json', localeDir, locale);
-        let targetMinimalFile = util.format('%s/%s/minimal.messages.json', localeDir, locale);
+      if (args.strict && 'sourceLocale' in packageObject.lingui && locale !== packageObject.lingui.sourceLocale) {
+        verifyNoMissingTranslations(minimalCatalogObject, locale)
+      }
 
-        fs.writeFileSync(targetComplexFile, JSON.stringify(complexCatalog, null, 2));
-        fs.writeFileSync(targetMinimalFile, JSON.stringify(minimalCatalog, null, 2));
+      // Pull out translations of interest
+      const screenedCatalogObject = screenedKeys.reduce((final, key) =>
+        key in minimalCatalogObject ? Object.assign(final, { [key]: minimalCatalogObject[key] }) : final, {})
 
-        console.info(util.format('%s %d', locale, Object.keys(minimalCatalog).length));
-    });
-});
+      // Compile the catalog js data
+      const jsData = compile.createCompiledCatalog(locale, screenedCatalogObject)
 
-commander.command('compile [packageFile] [localeDirectory]').option('-s, --strict', 'Strict compilation').action(function (packageFile, localeDir, args)
-{
-    if (typeof packageFile === "undefined")
-    {
-        console.info("No package.json path supplied, using default: ./package.json");
-        packageFile = "./package.json";
-    }
+      // Catalog: __lingui-multi is for complete catalog
+      const targetFile = catalogName === '__lingui-multi' ? getCatalogTagetFilePath(localeDir, locale) : getSubCatalogTargetFilePath(localeDir, locale, catalogName)
 
-    if (fs.existsSync(packageFile) === false)
-    {
-        console.error("ERROR: package.json does not exist");
-        process.exit(1);
-    }
+      fs.writeFileSync(targetFile, jsData)
 
-    var packageObject = JSON.parse(fs.readFileSync(packageFile));
+      console.info(`${locale} ${Object.keys(screenedCatalogObject).length}`)
+    })
+  })
+}
 
-    if (typeof localeDir === "undefined")
-    {
-        console.info("No locale directory path supplied, using default: ./locale");
-        localeDir = "./locale";
-    }
+function loadPackageConfig (filename) {
+  if (fs.existsSync(filename) === false) {
+    throw new Error('package.json does not exists')
+  }
 
-    if (fs.existsSync(localeDir) === false)
-    {
-        console.error("ERROR: locale directory does not exist");
-        process.exit(1);
-    }
+  try {
+    const parsedConfig = JSON.parse(fs.readFileSync(filename))
 
-    var locales = fs.readdirSync(localeDir);
+    // Validate the config and then inject main
+    // catalog settings so that a complete catalog
+    // is generated alongside sub-catalogs, then
+    // return the resulting configuration object
+    return injectMainCatalogConfig(validatePackageConfig(parsedConfig))
+  } catch (error) {
+    throw new Error('package.json is not a valid JSON file')
+  }
+}
 
-    if (!("lingui" in packageObject))
-    {
-        console.error("ERROR: No lingui config found");
-        process.exit(1);
-    }
+function validatePackageConfig (config) {
+  if (!('lingui' in config)) {
+    throw new Error('no lingui config found')
+  }
 
-    if (!("lingui-multi" in packageObject))
-    {
-        console.error("ERROR: No lingui-multi bundles config found");
-        process.exit(1);
-    }
+  if (!('sourceLocale' in config.lingui)) {
+    throw new Error('no source locale in lingui config')
+  }
 
-    // This is to replace the actual `lingui compile` workflow:
-    // introduce a messages.js, file as well
-    packageObject["lingui-multi"]["__replacement"] = {};
+  if (!('lingui-multi' in config)) {
+    throw new Error('no lingui-multi config found')
+  }
 
-    // Using strict so implicit vars won"t work
-    let bundle;
+  if (Object.keys(config['lingui-multi']).length === 0) {
+    throw new Error('no lingui-multi sub-catalog config found')
+  }
 
-    // Iterate the language bundles
-    for (bundle in packageObject["lingui-multi"])
-    {
-        console.info(util.format("\n\nCatalog: %s", bundle));
-        console.info("================")
+  return config
+}
 
-        let options = Object.assign({}, packageObject.lingui);
+function injectMainCatalogConfig (config) {
+  return Object.assign({}, config, { 'lingui-multi': Object.assign(config['lingui-multi'], { '__lingui-multi': {} }) })
+}
 
-        // Convert from CLI to API keys
-        if ("srcPathIgnorePatterns" in options)
-        {
-            options.ignore = options.srcPathIgnorePatterns;
-        }
+function loadLocales (directory) {
+  if (fs.existsSync(directory) === false) {
+    throw new Error('locale directory does not exist')
+  }
 
-        if ("srcPathIgnorePatterns" in packageObject["lingui-multi"][bundle])
-        {
-            options.ignore = (options.ignore || []).concat(packageObject["lingui-multi"][bundle]["srcPathIgnorePatterns"]);
-        }
+  return fs.readdirSync(directory)
+}
 
-        delete options.srcPathIgnorePatterns;
+function getSubCatalogIgnoreRegex (config, catalogName) {
+  const ignorePatterns = [].concat(config.lingui.srcPathIgnorePatterns || [], config['lingui-multi'][catalogName].srcPathIgnorePatterns || [])
 
-        // Grab the ignore patterns
-        let ignorePattern = options.ignore.length ? new RegExp(options.ignore.join("|"), "i") : null;
+  return ignorePatterns.length ? new RegExp(ignorePatterns.join('|'), 'i') : null
+}
 
-        let keyCount = null;
+function loadMinimalCatalog (directory, locale) {
+  return _loadCatalog(directory, locale, 'minimal.')
+}
 
-        // Go over each locale
-        locales.forEach(function (locale)
-        {
-            // Just ignore the build directory if it pops up by mistake.
-            if (locale === "_build") return;
+function loadLinguiCatalog (directory, locale) {
+  return _loadCatalog(directory, locale, '')
+}
 
-            // Only continue if locale is a directory
-            if (fs.lstatSync(path.resolve(localeDir, locale)).isDirectory() === false)
-            {
-                return;
-            }
+function _loadCatalog (directory, locale, prefix) {
+  const filePath = _getJsonFilePath(directory, locale, prefix)
 
-            let filePath = util.format("%s/%s/messages.json", localeDir, locale);
-            if (fs.existsSync(filePath) === false)
-            {
-                console.info(util.format("INFO: File not found for conversion: %s", filePath));
-                return;
-            }
+  try {
+    return Object.assign({}, JSON.parse(fs.readFileSync(filePath)))
+  } catch (error) {
+    throw new Error(`file is corrupted: ${filePath}`)
+  }
+}
 
-            let messagesObject = {};
-            messagesObject = Object.assign(messagesObject, JSON.parse(fs.readFileSync(filePath)));
+function verifyNoMissingTranslations (catalog, locale) {
+  const missingTranslations = Object.keys(catalog).filter(key => catalog[key] === '')
 
-            let key;
-            let screenedKeys = [];
-            for (key in messagesObject)
-            {
-                let required = false;
-                
-                let origin;
+  if (missingTranslations.length > 0) {
+    throw new Error(`Missing ${missingTranslations.length} translations in ${locale}`)
+  }
+}
 
-                messagesObject[key]["origin"].forEach(function (origin)
-                {
-                    // Filter out ignore patterns
-                    if (ignorePattern && ignorePattern.test(origin[0])) return;
-                    
-                    required = true
-                });
-                
+function createTempDirectory () {
+  console.info('Creating temporary build directory')
+  return tmp.dirSync().name
+}
 
-                // Gather the keys of interest
-                if (required)
-                    screenedKeys.push(key);
-            }
+function getCatalogTagetFilePath (directory, locale) {
+  return _getTargetFilePath(directory, locale, '')
+}
 
-            let localeTranslationsCount = Object.keys(screenedKeys).length;
+function getSubCatalogTargetFilePath (directory, locale, catalogName) {
+  return _getTargetFilePath(directory, locale, `${catalogName}.`)
+}
 
-            console.info(util.format("%s:  %d", locale, localeTranslationsCount));
+function _getTargetFilePath (directory, locale, prefix) {
+  return `${directory}/${locale}/${prefix}messages.js`
+}
 
-            // Initialize the first time
-            if (keyCount == null)
-                keyCount = localeTranslationsCount;
+function _getJsonFilePath (directory, locale, prefix) {
+  let jsonFile = `${directory}/${locale}/${prefix}messages.json`
+  if (fs.existsSync(jsonFile) === false) {
+    throw new Error(`file missing: ${jsonFile}`)
+  }
+  return jsonFile
+}
 
-            // Check if all locales have the same count
-            if (keyCount != localeTranslationsCount)
-            {
-                console.error("Translations mismatch between locales.");
-                process.exit(1);
-            }
+function createMinimalCatalog (complexCatalog) {
+  return Object.keys(complexCatalog).reduce((final, key) =>
+    Object.assign(final, { [key]: complexCatalog[key].translation }), {})
+}
 
-            let minimalCatalogPath = util.format("%s/%s/minimal.messages.json", localeDir, locale);
-            if (fs.existsSync(filePath) === false)
-            {
-                console.info(util.format("INFO: File not found for conversion: %s", filePath));
-                return;
-            }
+function writeCatalogs (complex, minimal, directory, locale) {
+  const targetComplexFile = `${directory}/${locale}/messages.json`
+  const targetMinimalFile = `${directory}/${locale}/minimal.messages.json`
 
-            // Grab hold of the minimal format catalog
-            let minimalCatalogObject = JSON.parse(fs.readFileSync(minimalCatalogPath));
+  fs.writeFileSync(targetComplexFile, JSON.stringify(complex, null, 2))
+  fs.writeFileSync(targetMinimalFile, JSON.stringify(minimal, null, 2))
+}
 
-            if (args.strict && 'sourceLocale' in packageObject.lingui && locale != packageObject.lingui.sourceLocale)
-            {
-                let missingTranslations = [];
-                for (key in minimalCatalogObject)
-                {
-                    if (minimalCatalogObject[key] == '')
-                    {
-                        missingTranslations.push(key);
-                    }
-                }
-
-                if (missingTranslations.length > 0)
-                {
-                    console.error(util.format("\n\nMissing %d translations in locale %s", missingTranslations.length, locale));
-                    missingTranslations.forEach(function (key)
-                    {
-                        console.error(key);
-                    });
-
-                    process.exit(1);
-                }
-            }    
-
-            // Pull out translations of interest
-            let screenedCatalogObject = _.pick(minimalCatalogObject, screenedKeys);
-
-            // Compile the catalog js data
-            let jsData = compile.createCompiledCatalog(locale, screenedCatalogObject);
-
-            let targetFile;
-            
-            // @lingui/cli compile replacement
-            if (bundle === '__replacement')
-                targetFile = util.format("%s/%s/messages.js", localeDir, locale);
-            else
-            // @sector-labs/lingui-multi compile workflow    
-                targetFile = util.format("%s/%s/%s.messages.js", localeDir, locale, bundle);
-
-            // Write, and done
-            fs.writeFileSync(targetFile, jsData);
-
-        });
-
-    }
-
-});
-
-commander.parse(process.argv);
+commander.parse(process.argv)
