@@ -1,0 +1,26 @@
+{
+  "lingui": {
+    "format": "lingui",
+    "sourceLocale": "en",
+    "srcPathDirs": [
+      "<rootDir>/src"
+    ],
+    "srcPathIgnorePatterns": [
+      "<rootDir>/locale"
+    ]
+  },
+  "lingui-multi": {
+    "sub-catalog": {
+      "srcPathIgnorePatterns": [
+        "test-code-excluded"
+      ]
+    }
+  },
+  "devDependencies": {
+    "@babel/preset-react": "^7.0.0-beta.44",
+    "@lingui/cli": "^2.0.7",
+    "@lingui/react": "^2.0.7",
+    "babel-plugin-lingui-extract-messages": "^1.1.12",
+    "react": "^16.3.2"
+  }
+}
