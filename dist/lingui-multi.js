@@ -57,7 +57,7 @@ function extractCatalogs (packageFile, packageObject, localesDir, locales) {
 
   // Prepopulate with empty translations
   const linguiCatalog = Object.keys(rawCatalog).reduce((final, key) => Object.assign(final, { [key]: Object.assign({ translation: '' }, rawCatalog[key]) }), {})
-
+  
   // Go over each locale
   locales.forEach((locale) => {
     // Just ignore the build directory if it pops up by mistake.
@@ -68,9 +68,10 @@ function extractCatalogs (packageFile, packageObject, localesDir, locales) {
       return
     }
 
-    const complexCatalog = Object.assign(linguiCatalog, filterTranslationOnly(loadLinguiCatalog(localesDir, locale)))
+    const translationOnlyCatalog = filterTranslationOnly(loadLinguiCatalog(localesDir, locale))
+    const complexCatalog = Object.keys(linguiCatalog).reduce((finalCatalog, translationKey) => Object.assign(finalCatalog, { [translationKey]: Object.assign(linguiCatalog[translationKey], translationOnlyCatalog[translationKey]) }), {})
 
-    const minimalCatalog = createMinimalCatalog(complexCatalog)
+    const minimalCatalog = Object.assign(createMinimalCatalog(complexCatalog), loadMinimalCatalogBypassErrors(localesDir, locale))
 
     writeCatalogs(complexCatalog, minimalCatalog, localesDir, locale)
     console.info(`${locale} ${Object.keys(minimalCatalog).length}`)
@@ -183,6 +184,14 @@ function getSubCatalogIgnoreRegex (config, catalogName) {
 
 function loadMinimalCatalog (directory, locale) {
   return _loadCatalog(directory, locale, 'minimal.')
+}
+
+function loadMinimalCatalogBypassErrors (directory, locale) {
+  try {
+    return _loadCatalog(directory, locale, 'minimal.')
+  } catch (error) {
+    return {}
+  }
 }
 
 function loadLinguiCatalog (directory, locale) {
