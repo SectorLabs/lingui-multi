@@ -1,6 +1,6 @@
 {
   "name": "@sector-labs/lingui-multi",
-  "version": "1.0.10",
+  "version": "1.0.11",
   "description": "Command line utility to compile multiple catalogs from a single js-lingui messages.json file.",
   "repository": {
     "url": "git+ssh://github.com/SectorLabs/lingui-multi.git",

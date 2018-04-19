@@ -68,7 +68,7 @@ function extractCatalogs (packageFile, packageObject, localesDir, locales) {
       return
     }
 
-    const complexCatalog = Object.assign(linguiCatalog, loadLinguiCatalog(localesDir, locale))
+    const complexCatalog = Object.assign(linguiCatalog, filterTranslationOnly(loadLinguiCatalog(localesDir, locale)))
 
     const minimalCatalog = createMinimalCatalog(complexCatalog)
 
@@ -242,6 +242,15 @@ function writeCatalogs (complex, minimal, directory, locale) {
 
   fs.writeFileSync(targetComplexFile, JSON.stringify(complex, null, 2))
   fs.writeFileSync(targetMinimalFile, JSON.stringify(minimal, null, 2))
+}
+
+function filterProperties (obj, properties) {
+  return Object.keys(obj).filter(key => properties.includes(key)).reduce((final, filteredKey) => Object.assign(final, { [filteredKey]: obj[filteredKey] }), {})
+}
+
+function filterTranslationOnly (catalog)
+{
+  return Object.keys(catalog).reduce((finalCatalog, translationKey) => Object.assign(finalCatalog, { [translationKey]: filterProperties(catalog[translationKey], ['translation']) }), {})
 }
 
 module.exports = {
