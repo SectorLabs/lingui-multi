@@ -57,7 +57,7 @@ function extractCatalogs (packageFile, packageObject, localesDir, locales) {
 
   // Prepopulate with empty translations
   const linguiCatalog = Object.keys(rawCatalog).reduce((final, key) => Object.assign(final, { [key]: Object.assign({ translation: '' }, rawCatalog[key]) }), {})
-  
+
   // Go over each locale
   locales.forEach((locale) => {
     // Just ignore the build directory if it pops up by mistake.
@@ -183,23 +183,27 @@ function getSubCatalogIgnoreRegex (config, catalogName) {
 }
 
 function loadMinimalCatalog (directory, locale) {
-  return _loadCatalog(directory, locale, 'minimal.')
+  return _loadCatalog(directory, locale)
 }
 
 function loadMinimalCatalogBypassErrors (directory, locale) {
   try {
-    return _loadCatalog(directory, locale, 'minimal.')
+    return _loadCatalog(directory, locale)
   } catch (error) {
     return {}
   }
 }
 
 function loadLinguiCatalog (directory, locale) {
-  return _loadCatalog(directory, locale)
+  try {
+    return _loadCatalog(directory, locale, '.metadata')
+  } catch (error) {
+    return {}
+  }
 }
 
-function _loadCatalog (directory, locale, prefix) {
-  const filePath = _getJsonFilePath(directory, locale, prefix)
+function _loadCatalog (directory, locale, suffix) {
+  const filePath = _getJsonFilePath(directory, locale, suffix)
 
   try {
     return Object.assign({}, JSON.parse(fs.readFileSync(filePath)))
@@ -232,8 +236,8 @@ function _getTargetFilePath (directory, locale, prefix = '') {
   return `${directory}/${locale}/${prefix}messages.js`
 }
 
-function _getJsonFilePath (directory, locale, prefix = '') {
-  let jsonFile = `${directory}/${locale}/${prefix}messages.json`
+function _getJsonFilePath (directory, locale, suffix = '') {
+  let jsonFile = `${directory}/${locale}/messages${suffix}.json`
   if (fs.existsSync(jsonFile) === false) {
     throw new Error(`file missing: ${jsonFile}`)
   }
@@ -246,8 +250,8 @@ function createMinimalCatalog (complexCatalog) {
 }
 
 function writeCatalogs (complex, minimal, directory, locale) {
-  const targetComplexFile = `${directory}/${locale}/messages.json`
-  const targetMinimalFile = `${directory}/${locale}/minimal.messages.json`
+  const targetComplexFile = `${directory}/${locale}/messages.metadata.json`
+  const targetMinimalFile = `${directory}/${locale}/messages.json`
 
   fs.writeFileSync(targetComplexFile, JSON.stringify(complex, null, 2))
   fs.writeFileSync(targetMinimalFile, JSON.stringify(minimal, null, 2))
@@ -257,8 +261,7 @@ function filterProperties (obj, properties) {
   return Object.keys(obj).filter(key => properties.includes(key)).reduce((final, filteredKey) => Object.assign(final, { [filteredKey]: obj[filteredKey] }), {})
 }
 
-function filterTranslationOnly (catalog)
-{
+function filterTranslationOnly (catalog) {
   return Object.keys(catalog).reduce((finalCatalog, translationKey) => Object.assign(finalCatalog, { [translationKey]: filterProperties(catalog[translationKey], ['translation']) }), {})
 }
 
