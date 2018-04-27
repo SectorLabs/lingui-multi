@@ -253,7 +253,9 @@ function writeCatalogs (complex, minimal, directory, locale) {
   const targetComplexFile = `${directory}/${locale}/messages.metadata.json`
   const targetMinimalFile = `${directory}/${locale}/messages.json`
 
-  fs.writeFileSync(targetComplexFile, JSON.stringify(complex, null, 2))
+  const occuranceLocationsRemoved = _removeOccuranceLineNumbers(complex)
+
+  fs.writeFileSync(targetComplexFile, JSON.stringify(occuranceLocationsRemoved, null, 2))
   fs.writeFileSync(targetMinimalFile, JSON.stringify(minimal, null, 2))
 }
 
@@ -263,6 +265,11 @@ function filterProperties (obj, properties) {
 
 function filterTranslationOnly (catalog) {
   return Object.keys(catalog).reduce((finalCatalog, translationKey) => Object.assign(finalCatalog, { [translationKey]: filterProperties(catalog[translationKey], ['translation']) }), {})
+}
+
+function _removeOccuranceLineNumbers (complexCatalog) {
+  const keys = Object.keys(complexCatalog)
+  return keys.reduce((redactedCatalog, key) => Object.assign(redactedCatalog, { [key]: Object.assign(complexCatalog[key], { origin: complexCatalog[key].origin.map(origin => origin.filter((element, idx) => idx === 0)) }) }), {})
 }
 
 module.exports = {
