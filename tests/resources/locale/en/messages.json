@@ -1,38 +1,6 @@
 {
-  "Test Excluded Heading": {
-    "translation": "Test Excluded Heading",
-    "origin": [
-      [
-        "src/test-code-excluded.jsx",
-        6
-      ]
-    ]
-  },
-  "Test Excluded Paragraph": {
-    "translation": "Test Excluded Paragraph",
-    "origin": [
-      [
-        "src/test-code-excluded.jsx",
-        9
-      ]
-    ]
-  },
-  "Test Heading": {
-    "translation": "Test Heading",
-    "origin": [
-      [
-        "src/test-code.jsx",
-        6
-      ]
-    ]
-  },
-  "Test Paragraph": {
-    "translation": "Test Paragraph",
-    "origin": [
-      [
-        "src/test-code.jsx",
-        9
-      ]
-    ]
-  }
+  "Test Heading": "Test Heading",
+  "Test Paragraph": "Test Paragraph",
+  "Test Excluded Heading": "Test Excluded Heading",
+  "Test Excluded Paragraph": "Test Excluded Paragraph"
 }

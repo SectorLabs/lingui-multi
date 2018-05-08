@@ -1,0 +1,28 @@
+{
+  "Test Heading": {
+    "translation": "",
+    "origin": [
+      "src/test-code-2.jsx",
+      "src/test-code.jsx"
+    ]
+  },
+  "Test Paragraph": {
+    "translation": "",
+    "origin": [
+      "src/test-code-2.jsx",
+      "src/test-code.jsx"
+    ]
+  },
+  "Test Excluded Heading": {
+    "translation": "",
+    "origin": [
+      "src/test-code-excluded.jsx"
+    ]
+  },
+  "Test Excluded Paragraph": {
+    "translation": "",
+    "origin": [
+      "src/test-code-excluded.jsx"
+    ]
+  }
+}

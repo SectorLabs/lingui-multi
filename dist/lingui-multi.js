@@ -45,11 +45,11 @@ commander.command('compile [packageFile] [localesDirectory]').option('-s, --stri
   }
 })
 
-function extractCatalogs (packageFile, packageObject, localesDir, locales) {
+const extractCatalogs = (packageFile, packageObject, localesDir, locales) => {
   // The directory where we are going to do the extract/collect
   const targetDir = createTempDirectory()
 
-  let options = Object.assign({}, packageObject.lingui, { srcPathDirs: packageObject.lingui.srcPathDirs.map(srcPath => srcPath.replace('<rootDir>', path.dirname(packageFile))), ignore: packageObject.lingui.srcPathIgnorePatterns || [] })
+  const options = Object.assign({}, packageObject.lingui, { srcPathDirs: packageObject.lingui.srcPathDirs.map(srcPath => srcPath.replace('<rootDir>', path.dirname(packageFile))), ignore: packageObject.lingui.srcPathIgnorePatterns || [] })
 
   extract.extract(options.srcPathDirs, targetDir, options)
 
@@ -57,6 +57,9 @@ function extractCatalogs (packageFile, packageObject, localesDir, locales) {
 
   // Prepopulate with empty translations
   const linguiCatalog = Object.keys(rawCatalog).reduce((final, key) => Object.assign(final, { [key]: Object.assign({ translation: '' }, rawCatalog[key]) }), {})
+
+  // Remove the occurance line numbers and flatten the origin list
+  const simplifiedCatalog = simplifyComplexCatalog(linguiCatalog)
 
   // Go over each locale
   locales.forEach((locale) => {
@@ -69,16 +72,22 @@ function extractCatalogs (packageFile, packageObject, localesDir, locales) {
     }
 
     const translationOnlyCatalog = filterTranslationOnly(loadLinguiCatalog(localesDir, locale))
-    const complexCatalog = Object.keys(linguiCatalog).reduce((finalCatalog, translationKey) => Object.assign(finalCatalog, { [translationKey]: Object.assign(linguiCatalog[translationKey], translationOnlyCatalog[translationKey]) }), {})
+    const complexCatalog = Object.keys(simplifiedCatalog).reduce((finalCatalog, translationKey) => Object.assign(finalCatalog, { [translationKey]: Object.assign(simplifiedCatalog[translationKey], translationOnlyCatalog[translationKey]) }), {})
 
     const minimalCatalog = Object.assign(createMinimalCatalog(complexCatalog), loadMinimalCatalogBypassErrors(localesDir, locale))
 
-    writeCatalogs(complexCatalog, minimalCatalog, localesDir, locale)
+    writeMinimalCatalog(minimalCatalog, localesDir, locale)
+
+    // Write metadata catalog only to source locale directory
+    if (locale === options.sourceLocale) {
+      writeMetadataCatalog(complexCatalog, localesDir, locale)
+    }
+
     console.info(`${locale} ${Object.keys(minimalCatalog).length}`)
   })
 }
 
-function compileCatalogs (packageFile, packageObject, localesDir, locales, args) {
+const compileCatalogs = (packageFile, packageObject, localesDir, locales, args) => {
   // Iterate the language catalogs
   Object.keys(packageObject['lingui-multi']).forEach(catalogName => {
     console.info(`\n\nCatalog: ${catalogName}`)
@@ -97,21 +106,21 @@ function compileCatalogs (packageFile, packageObject, localesDir, locales, args)
         return
       }
 
-      const messagesObject = loadLinguiCatalog(localesDir, locale)
+      // We only pick up the metadata catalog from source locale directory
+      const messagesObject = loadLinguiCatalog(localesDir, packageObject.lingui.sourceLocale)
 
-      const screenedKeys = Object.keys(messagesObject).filter(key => messagesObject[key].origin.every(
-        origin => ignorePattern && ignorePattern.test(origin[0]) === false))
+      const screenedKeys = getScreenedKeys(messagesObject, ignorePattern)
 
       // Grab hold of the minimal format catalog
       const minimalCatalogObject = loadMinimalCatalog(localesDir, locale)
 
+      // Strict mode checking for missing translations
       if (args.strict && 'sourceLocale' in packageObject.lingui && locale !== packageObject.lingui.sourceLocale) {
         verifyNoMissingTranslations(minimalCatalogObject, locale)
       }
 
       // Pull out translations of interest
-      const screenedCatalogObject = screenedKeys.reduce((final, key) =>
-        key in minimalCatalogObject ? Object.assign(final, { [key]: minimalCatalogObject[key] }) : final, {})
+      const screenedCatalogObject = filterProperties(minimalCatalogObject, screenedKeys)
 
       // Compile the catalog js data
       const jsData = compile.createCompiledCatalog(locale, screenedCatalogObject)
@@ -126,7 +135,7 @@ function compileCatalogs (packageFile, packageObject, localesDir, locales, args)
   })
 }
 
-function loadPackageConfig (filename) {
+const loadPackageConfig = filename => {
   if (fs.existsSync(filename) === false) {
     throw new Error('package.json does not exist')
   }
@@ -144,7 +153,7 @@ function loadPackageConfig (filename) {
   }
 }
 
-function validatePackageConfig (config) {
+const validatePackageConfig = config => {
   if (!('lingui' in config)) {
     throw new Error('no lingui config found')
   }
@@ -164,11 +173,9 @@ function validatePackageConfig (config) {
   return config
 }
 
-function injectMainCatalogConfig (config) {
-  return Object.assign({}, config, { 'lingui-multi': Object.assign(config['lingui-multi'], { '__lingui-multi': {} }) })
-}
+const injectMainCatalogConfig = config => Object.assign({}, config, { 'lingui-multi': Object.assign(config['lingui-multi'], { '__lingui-multi': {} }) })
 
-function loadLocales (directory) {
+const loadLocales = directory => {
   if (fs.existsSync(directory) === false) {
     throw new Error('locale directory does not exist')
   }
@@ -176,17 +183,15 @@ function loadLocales (directory) {
   return fs.readdirSync(directory)
 }
 
-function getSubCatalogIgnoreRegex (config, catalogName) {
+const getSubCatalogIgnoreRegex = (config, catalogName) => {
   const ignorePatterns = [].concat(config.lingui.srcPathIgnorePatterns || [], config['lingui-multi'][catalogName].srcPathIgnorePatterns || [])
 
   return ignorePatterns.length ? new RegExp(ignorePatterns.join('|'), 'i') : null
 }
 
-function loadMinimalCatalog (directory, locale) {
-  return _loadCatalog(directory, locale)
-}
+const loadMinimalCatalog = (directory, locale) => _loadCatalog(directory, locale)
 
-function loadMinimalCatalogBypassErrors (directory, locale) {
+const loadMinimalCatalogBypassErrors = (directory, locale) => {
   try {
     return _loadCatalog(directory, locale)
   } catch (error) {
@@ -194,7 +199,7 @@ function loadMinimalCatalogBypassErrors (directory, locale) {
   }
 }
 
-function loadLinguiCatalog (directory, locale) {
+const loadLinguiCatalog = (directory, locale) => {
   try {
     return _loadCatalog(directory, locale, '.metadata')
   } catch (error) {
@@ -202,7 +207,7 @@ function loadLinguiCatalog (directory, locale) {
   }
 }
 
-function _loadCatalog (directory, locale, suffix) {
+const _loadCatalog = (directory, locale, suffix = '') => {
   const filePath = _getJsonFilePath(directory, locale, suffix)
 
   try {
@@ -212,7 +217,7 @@ function _loadCatalog (directory, locale, suffix) {
   }
 }
 
-function verifyNoMissingTranslations (catalog, locale) {
+const verifyNoMissingTranslations = (catalog, locale) => {
   const missingTranslations = Object.keys(catalog).filter(key => catalog[key] === '')
 
   if (missingTranslations.length > 0) {
@@ -220,57 +225,35 @@ function verifyNoMissingTranslations (catalog, locale) {
   }
 }
 
-function createTempDirectory () {
-  return tmp.dirSync().name
-}
+const createTempDirectory = () => tmp.dirSync().name
 
-function getCatalogTagetFilePath (directory, locale) {
-  return _getTargetFilePath(directory, locale)
-}
+const getCatalogTagetFilePath = (directory, locale) => _getTargetFilePath(directory, locale)
 
-function getSubCatalogTargetFilePath (directory, locale, catalogName) {
-  return _getTargetFilePath(directory, locale, `${catalogName}.`)
-}
+const getSubCatalogTargetFilePath = (directory, locale, catalogName) => _getTargetFilePath(directory, locale, `${catalogName}.`)
 
-function _getTargetFilePath (directory, locale, prefix = '') {
-  return `${directory}/${locale}/${prefix}messages.js`
-}
+const _getTargetFilePath = (directory, locale, prefix = '') => `${directory}/${locale}/${prefix}messages.js`
 
-function _getJsonFilePath (directory, locale, suffix = '') {
-  let jsonFile = `${directory}/${locale}/messages${suffix}.json`
+const _getJsonFilePath = (directory, locale, suffix = '') => {
+  const jsonFile = `${directory}/${locale}/messages${suffix}.json`
   if (fs.existsSync(jsonFile) === false) {
     throw new Error(`file missing: ${jsonFile}`)
   }
   return jsonFile
 }
 
-function createMinimalCatalog (complexCatalog) {
-  return Object.keys(complexCatalog).reduce((final, key) =>
-    Object.assign(final, { [key]: complexCatalog[key].translation }), {})
-}
+const createMinimalCatalog = (complexCatalog) => Object.keys(complexCatalog).reduce((final, key) => Object.assign(final, { [key]: complexCatalog[key].translation }), {})
 
-function writeCatalogs (complex, minimal, directory, locale) {
-  const targetComplexFile = `${directory}/${locale}/messages.metadata.json`
-  const targetMinimalFile = `${directory}/${locale}/messages.json`
+const writeMinimalCatalog = (catalog, directory, locale) => fs.writeFileSync(`${directory}/${locale}/messages.json`, JSON.stringify(catalog, null, 2))
 
-  const occuranceLocationsRemoved = _removeOccuranceLineNumbers(complex)
+const writeMetadataCatalog = (catalog, directory, locale) => fs.writeFileSync(`${directory}/${locale}/messages.metadata.json`, JSON.stringify(catalog, null, 2))
 
-  fs.writeFileSync(targetComplexFile, JSON.stringify(occuranceLocationsRemoved, null, 2))
-  fs.writeFileSync(targetMinimalFile, JSON.stringify(minimal, null, 2))
-}
+const getScreenedKeys = (messages, ignorePattern) => Object.keys(messages).filter(key => messages[key].origin.every(origin => ignorePattern && ignorePattern.test(origin) === false))
 
-function filterProperties (obj, properties) {
-  return Object.keys(obj).filter(key => properties.includes(key)).reduce((final, filteredKey) => Object.assign(final, { [filteredKey]: obj[filteredKey] }), {})
-}
+const filterProperties = (obj, properties) => Object.keys(obj).filter(key => properties.includes(key)).reduce((final, filteredKey) => Object.assign(final, { [filteredKey]: obj[filteredKey] }), {})
 
-function filterTranslationOnly (catalog) {
-  return Object.keys(catalog).reduce((finalCatalog, translationKey) => Object.assign(finalCatalog, { [translationKey]: filterProperties(catalog[translationKey], ['translation']) }), {})
-}
+const filterTranslationOnly = catalog => Object.keys(catalog).reduce((finalCatalog, translationKey) => Object.assign(finalCatalog, { [translationKey]: filterProperties(catalog[translationKey], ['translation']) }), {})
 
-function _removeOccuranceLineNumbers (complexCatalog) {
-  const keys = Object.keys(complexCatalog)
-  return keys.reduce((redactedCatalog, key) => Object.assign(redactedCatalog, { [key]: Object.assign(complexCatalog[key], { origin: complexCatalog[key].origin.map(origin => origin.filter((element, idx) => idx === 0)) }) }), {})
-}
+const simplifyComplexCatalog = catalog => Object.keys(catalog).reduce((simplifiedCatalog, key) => Object.assign(simplifiedCatalog, { [key]: Object.assign(catalog[key], { origin: catalog[key].origin.map(originArray => originArray.shift()) }) }), {})
 
 module.exports = {
   loadLinguiCatalog,

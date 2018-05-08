@@ -10,12 +10,12 @@ describe('Catalog', () => {
     })
 
     it('should read lingui catalog file', () => {
-      const loadedCatalog = Program._loadCatalog('./tests/resources/locale', 'en')
+      const loadedCatalog = Program._loadCatalog('./tests/resources/locale', 'en', '.metadata')
       verifyLinguiCatalog(loadedCatalog)
     })
 
     it('should read minimal catalog file', () => {
-      const loadedCatalog = Program._loadCatalog('./tests/resources/locale', 'en', 'minimal.')
+      const loadedCatalog = Program._loadCatalog('./tests/resources/locale', 'en')
       verifyMinimalCatalog(loadedCatalog)
     })
   })
