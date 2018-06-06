@@ -17,7 +17,7 @@
   "license": "MIT",
   "private": false,
   "dependencies": {
-    "@lingui/cli": "2.0.1",
+    "@sector-labs/lingui-cli": "^2.0.4-sl.7",
     "babel-core": "^6.26.0",
     "babel-generator": "^6.26.1",
     "babel-types": "^6.26.0",
@@ -31,7 +31,7 @@
   ],
   "devDependencies": {
     "babel-plugin-lingui-extract-messages": "^1.1.12",
-    "babel-preset-react": "^6.24.1",
+    "@sector-labs/lingui-babel-preset-react": "^2.0.4-sl.7",
     "chai": "^4.1.2",
     "eslint-config-standard": "^11.0.0",
     "eslint-plugin-import": "^2.11.0",
