@@ -141,7 +141,7 @@ const compileCatalogs = (packageFile, packageObject, localesDir, locales, args) 
             const screenedCatalogObject = filterProperties(minimalCatalogObject, screenedKeys)
 
             // Compile the catalog js data
-            const jsData = compile.createCompiledCatalog(locale, screenedCatalogObject)
+            const jsData = compile.createCompiledCatalog(locale, screenedCatalogObject, args)
 
             // Catalog: __lingui-multi is for complete catalog
             const targetFile = catalogName === '__lingui-multi' ?
