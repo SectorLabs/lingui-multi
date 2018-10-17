@@ -93,11 +93,11 @@ const extractCatalogs = (packageFile, packageObject, localesDir, locales) => {
 
     const minimalCatalog = Object.assign(createMinimalCatalog(complexCatalog), loadMinimalCatalogBypassErrors(localesDir, locale))
 
-    writeMinimalCatalog(minimalCatalog, localesDir, locale)
+    writeMinimalCatalog(sortObjectKeys(minimalCatalog), localesDir, locale)
 
     // Write metadata catalog only to source locale directory
     if (locale === options.sourceLocale) {
-      writeMetadataCatalog(complexCatalog, localesDir, locale)
+      writeMetadataCatalog(sortObjectKeys(complexCatalog), localesDir, locale)
     }
 
     console.info(`${locale} ${Object.keys(minimalCatalog).length}`)
@@ -264,6 +264,14 @@ const _getJsonFilePath = (directory, locale, suffix = '') => {
     throw new Error(`file missing: ${jsonFile}`)
   }
   return jsonFile
+}
+
+const sortObjectKeys = (obj) => {
+  const sortedObj = {};
+  Object.keys(obj).sort().forEach(function(key) {
+    sortedObj[key] = obj[key];
+  });
+  return sortedObj;
 }
 
 const createMinimalCatalog = (complexCatalog) =>
