@@ -16,13 +16,14 @@ commander.version(require('../package.json').version)
 // Set up extract command
 commander
   .command('extract [packageFile] [localesDirectory]')
-  .action((packageFile = './package.json', localesDir = './locale') => {
+  .option('--clean', 'Removes obsolete messages from catalogs')
+  .action((packageFile = './package.json', localesDir = './locale', args={}) => {
     try {
       const packageObject = loadPackageConfig(packageFile)
 
       const locales = loadLocales(localesDir)
 
-      extractCatalogs(packageFile, packageObject, localesDir, locales)
+      extractCatalogs(packageFile, packageObject, localesDir, locales, args)
     } catch (error) {
       console.error(error.message)
       process.exit(1)
@@ -51,7 +52,7 @@ commander
     }
   })
 
-const extractCatalogs = (packageFile, packageObject, localesDir, locales) => {
+const extractCatalogs = (packageFile, packageObject, localesDir, locales, args) => {
   // The directory where we are going to do the extract/collect
   const targetDir = createTempDirectory()
 
@@ -91,7 +92,18 @@ const extractCatalogs = (packageFile, packageObject, localesDir, locales) => {
         [translationKey]: Object.assign(simplifiedCatalog[translationKey], translationOnlyCatalog[translationKey])
       }), {})
 
-    const minimalCatalog = Object.assign(createMinimalCatalog(complexCatalog), loadMinimalCatalogBypassErrors(localesDir, locale))
+    let minimalCatalog;
+    if(args.clean) {
+      const existingMinimalCatalog = loadMinimalCatalogBypassErrors(localesDir, locale)
+      minimalCatalog = createMinimalCatalog(complexCatalog)
+      Object.keys(existingMinimalCatalog).forEach(function(key) {
+	if(key in minimalCatalog) {
+	  minimalCatalog[key] = existingMinimalCatalog[key]
+	}
+      })
+    } else {
+      minimalCatalog = Object.assign(createMinimalCatalog(complexCatalog), loadMinimalCatalogBypassErrors(localesDir, locale))
+    }
 
     writeMinimalCatalog(sortObjectKeys(minimalCatalog), localesDir, locale)
 
