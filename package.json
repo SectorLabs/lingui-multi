@@ -1,6 +1,6 @@
 {
   "name": "@sector-labs/lingui-multi",
-  "version": "1.0.20",
+  "version": "2.0.0.",
   "description": "Command line utility to compile multiple catalogs from a single js-lingui messages.json file.",
   "repository": {
     "url": "git+ssh://github.com/SectorLabs/lingui-multi.git",
@@ -17,10 +17,7 @@
   "license": "MIT",
   "private": false,
   "dependencies": {
-    "@sector-labs/lingui-cli": "^2.0.4-sl.7",
-    "babel-core": "^6.26.0",
-    "babel-generator": "^6.26.1",
-    "babel-types": "^6.26.0",
+    "@sector-labs/lingui-cli": "^2.7.3-sl.17",
     "commander": "^2.15.1",
     "cryptiles": "4.1.2",
     "randomatic": "3.0.0",
@@ -32,15 +29,19 @@
     "dist"
   ],
   "devDependencies": {
-    "@sector-labs/lingui-babel-preset-react": "^2.0.4-sl.7",
-    "babel-plugin-lingui-extract-messages": "^1.1.12",
+    "@babel/core": "^7.3.4",
+    "@sector-labs/lingui-babel-plugin-extract-messages": "^2.7.3-sl.17",
+    "@sector-labs/lingui-babel-preset-react": "^2.7.3-sl.17",
+    "babel-core": "7.0.0-bridge.0",
+    "babel-plugin-macros": "2.4.2",
     "chai": "^4.1.2",
-    "eslint-config-standard": "^11.0.0",
-    "eslint-plugin-import": "^2.11.0",
-    "eslint-plugin-node": "^6.0.1",
-    "eslint-plugin-promise": "^3.7.0",
-    "eslint-plugin-standard": "^3.0.1",
-    "mocha": "^5.1.0"
+    "eslint": "^5.15.1",
+    "eslint-config-standard": "^12.0.0",
+    "eslint-plugin-import": "^2.16.0",
+    "eslint-plugin-node": "^8.0.1",
+    "eslint-plugin-promise": "^4.0.1",
+    "eslint-plugin-standard": "^4.0.0",
+    "mocha": "^6.0.2"
   },
   "scripts": {
     "test": "mocha tests/*.spec.js"

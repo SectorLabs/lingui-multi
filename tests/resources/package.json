@@ -17,10 +17,10 @@
     }
   },
   "devDependencies": {
-    "@babel/preset-react": "^7.0.0-beta.44",
-    "@lingui/cli": "^2.0.7",
-    "@lingui/react": "^2.0.7",
-    "babel-plugin-lingui-extract-messages": "^1.1.12",
+    "@babel/preset-react": "^7.0.0",
+    "@sector-labs/lingui-cli": "^2.7.3-sl.8",
+    "@sector-labs/lingui-react": "^2.7.3-sl.8",
+    "@sector-labs/lingui-babel-plugin-extract-messages": "^2.7.3-sl.8",
     "react": "^16.3.2"
   }
 }

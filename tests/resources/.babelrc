@@ -1,8 +1,8 @@
 {
   "presets": [
-    "babel-preset-react"
+    "@babel/preset-react"
   ],
   "plugins": [
-    "lingui-extract-messages"
+    "@sector-labs/lingui-babel-plugin-extract-messages"
   ]
 }
