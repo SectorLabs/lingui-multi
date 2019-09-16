@@ -24,7 +24,7 @@ describe('Configuration', () => {
     })
 
     it('should throw error on malformed file', () => {
-      expect(() => Program.loadPackageConfig('./tests/resources/src/test-code.jsx')).to.throw('package.json is not a valid JSON file')
+      expect(() => Program.loadPackageConfig('./tests/resources/src/test-code.jsx')).to.throw('is not a valid JSON file')
     })
   })
 
@@ -46,7 +46,7 @@ describe('Configuration', () => {
     })
 
     it('should throw error on malformed file', () => {
-      expect(() => Program.loadPackageConfig('./tests/resources/src/test-code.jsx')).to.throw('package.json is not a valid JSON file')
+      expect(() => Program.loadPackageConfig('./tests/resources/src/test-code.jsx')).to.throw('is not a valid JSON file')
     })
   })
 })

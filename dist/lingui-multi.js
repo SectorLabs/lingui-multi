@@ -15,9 +15,9 @@ commander.version(require('../package.json').version)
 
 // Set up extract command
 commander
-  .command('extract [packageFile] [localesDirectory]')
+  .command('extract [packageFile] [localesFolder]')
   .option('--clean', 'Removes obsolete messages from catalogs')
-  .action((packageFile = './package.json', localesDir = './locale', args={}) => {
+  .action((packageFile = './package.json', localesDir = './locale', args = {}) => {
     try {
       const packageObject = loadPackageConfig(packageFile)
 
@@ -32,10 +32,11 @@ commander
 
 // Set up compile command
 commander
-  .command('compile [packageFile] [localesDirectory]')
+  .command('compile [packageFile] [localesFolder]')
   .option('-s, --strict', 'Strict compilation')
   .option('--removeIdentityPairs', 'Reduces the catalog size by removing the entries that have a translation identical with the translation')
-  .action(function (packageFile = './package.json', localesDir = './locale', args = {}) {
+  .option('--targetFolder <folder>', 'The path where to store the compiled catalogs. Defaults to [localesFolder]')
+  .action(function(packageFile = './package.json', localesDir = './locale', args = {}) {
     try {
       // 1. Load the config from package.json
       // 2. Validate the configuration
@@ -45,12 +46,13 @@ commander
 
       var locales = loadLocales(localesDir)
 
-      compileCatalogs(packageFile, packageObject, localesDir, locales, args)
+      compileCatalogs(packageObject, localesDir, locales, args)
     } catch (error) {
       console.error(error.message)
       process.exit(1)
     }
   })
+})
 
 const extractCatalogs = (packageFile, packageObject, localesDir, locales, args) => {
   // The directory where we are going to do the extract/collect
@@ -97,9 +99,9 @@ const extractCatalogs = (packageFile, packageObject, localesDir, locales, args) 
       const existingMinimalCatalog = loadMinimalCatalogBypassErrors(localesDir, locale)
       minimalCatalog = createMinimalCatalog(complexCatalog)
       Object.keys(existingMinimalCatalog).forEach(function(key) {
-	if(key in minimalCatalog) {
-	  minimalCatalog[key] = existingMinimalCatalog[key]
-	}
+        if(key in minimalCatalog) {
+          minimalCatalog[key] = existingMinimalCatalog[key]
+        }
       })
     } else {
       minimalCatalog = Object.assign(createMinimalCatalog(complexCatalog), loadMinimalCatalogBypassErrors(localesDir, locale))
@@ -116,7 +118,7 @@ const extractCatalogs = (packageFile, packageObject, localesDir, locales, args) 
   })
 }
 
-const compileCatalogs = (packageFile, packageObject, localesDir, locales, args) => {
+const compileCatalogs = (packageObject, localesDir, locales, args) => {
   // Iterate the language catalogs
   Object.keys(packageObject['lingui-multi']).forEach(catalogName => {
     console.info(`\n\nCatalog: ${catalogName}`)
@@ -156,9 +158,9 @@ const compileCatalogs = (packageFile, packageObject, localesDir, locales, args) 
       const jsData = compile.createCompiledCatalog(locale, screenedCatalogObject, args)
 
       // Catalog: __lingui-multi is for complete catalog
-      const targetFile = catalogName === '__lingui-multi'
-        ? getCatalogTagetFilePath(localesDir, locale)
-        : getSubCatalogTargetFilePath(localesDir, locale, catalogName)
+      const targetFile = catalogName === '__lingui-multi' ?
+        getCatalogTargetFilePath(args.targetFolder || localesDir, locale) :
+        getSubCatalogTargetFilePath(args.targetFolder || localesDir, locale, catalogName)
 
       fs.writeFileSync(targetFile, jsData)
 
@@ -169,7 +171,7 @@ const compileCatalogs = (packageFile, packageObject, localesDir, locales, args) 
 
 const loadPackageConfig = filename => {
   if (fs.existsSync(filename) === false) {
-    throw new Error('package.json does not exist')
+    throw new Error(`${filename} does not exist`)
   }
 
   try {
@@ -181,7 +183,7 @@ const loadPackageConfig = filename => {
     // return the resulting configuration object
     return injectMainCatalogConfig(validatePackageConfig(parsedConfig))
   } catch (error) {
-    throw new Error('package.json is not a valid JSON file')
+    throw new Error(`${filename} is not a valid JSON file`)
   }
 }
 
@@ -219,9 +221,15 @@ const loadLocales = directory => {
   return fs.readdirSync(directory)
 }
 
+
 const getSubCatalogIgnoreRegex = (config, catalogName) => {
+  const globalIgnorePattern = process.env.LINGUI_MULTI_IGNORE_PATTERNS
+    ? [ process.env.LINGUI_MULTI_IGNORE_PATTERNS ]
+    : []
+
   const ignorePatterns = (config.lingui.srcPathIgnorePatterns || [])
     .concat(config['lingui-multi'][catalogName].srcPathIgnorePatterns || [])
+    .concat(globalIgnorePattern)
 
   return ignorePatterns.length ? new RegExp(ignorePatterns.join('|'), 'i') : null
 }
@@ -264,7 +272,7 @@ const verifyNoMissingTranslations = (catalog, locale) => {
 
 const createTempDirectory = () => tmp.dirSync().name
 
-const getCatalogTagetFilePath = (directory, locale) => _getTargetFilePath(directory, locale)
+const getCatalogTargetFilePath = (directory, locale) => _getTargetFilePath(directory, locale)
 
 const getSubCatalogTargetFilePath = (directory, locale, catalogName) => _getTargetFilePath(directory, locale, `${catalogName}.`)
 

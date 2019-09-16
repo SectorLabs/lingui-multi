@@ -24,7 +24,8 @@ Add the following to your project's package.json file:
  }
 ```
 
-Each sub-catalog will include all the i18n translations used in the source paths defined for lingui in the package.json file minus the ignore patterns defined either in the lingui configuration or the lingui-multi sub-catalog configuration.
+Each sub-catalog will include all the i18n translations used in the source paths defined for lingui in the package.json file minus the ignore patterns defined either in the lingui configuration, the lingui-multi sub-catalog configuration or in the environment variable named `LINGUI_MULTI_IGNORE_PATTERNS` (regular expression string, for example `"ignore_folder_2|ignore_folder_3"`).
+
 
 **Note: Lingui multi requires your existing messages.json file to be in `minimal` format. If it is in any other format please convert to the minimal format before using this utility**
 
@@ -50,4 +51,3 @@ The default value for package.json path is: `./package.json`
 The default value for locales directory is: `./locale`
 
 The utility will pick up lingui configuration and lingui-multi configuration from the package.json file and spit out catalog files in the locale directory with the format `<sub_catalog>.messages.js` for each sub-catalog and a `messages.js` catalog with all translations excluding only those that are defined in the `lingui` settings in `package.json` file of the application.
-
