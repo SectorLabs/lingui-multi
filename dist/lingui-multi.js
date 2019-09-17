@@ -52,7 +52,6 @@ commander
       process.exit(1)
     }
   })
-})
 
 const extractCatalogs = (packageFile, packageObject, localesDir, locales, args) => {
   // The directory where we are going to do the extract/collect
@@ -155,7 +154,7 @@ const compileCatalogs = (packageObject, localesDir, locales, args) => {
       const screenedCatalogObject = filterProperties(minimalCatalogObject, screenedKeys)
 
       // Compile the catalog js data
-      const jsData = compile.createCompiledCatalog(locale, screenedCatalogObject, args)
+      const jsData = compile.createCompiledCatalog(locale, screenedCatalogObject, false, 'cjs', packageObject.lingui.pseudoLocale, args.removeIdentityPairs)
 
       // Catalog: __lingui-multi is for complete catalog
       const targetFile = catalogName === '__lingui-multi' ?
