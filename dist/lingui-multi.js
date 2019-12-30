@@ -17,6 +17,7 @@ commander.version(require('../package.json').version)
 commander
   .command('extract [packageFile] [localesFolder]')
   .option('--clean', 'Removes obsolete messages from catalogs')
+  .option('--upwardBabelRoot', 'Search for babel configs in the parent dirs')
   .action((packageFile = './package.json', localesDir = './locale', args = {}) => {
     try {
       const packageObject = loadPackageConfig(packageFile)
@@ -63,6 +64,9 @@ const extractCatalogs = (packageFile, packageObject, localesDir, locales, args) 
     ignore: packageObject.lingui.srcPathIgnorePatterns || []
   })
 
+  if (args.upwardBabelRoot) {
+    options.babelOptions = { "rootMode": "upward" };
+  }
   extract.extract(options.srcPathDirs, targetDir, options)
 
   const rawCatalog = extract.collect(targetDir)
