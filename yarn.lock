@@ -200,7 +200,7 @@
     lodash "^4.17.13"
     to-fast-properties "^2.0.0"
 
-"@sector-labs/lingui-babel-plugin-extract-messages@2.7.3-sl.20", "@sector-labs/lingui-babel-plugin-extract-messages@^2.7.3-sl.20":
+"@sector-labs/lingui-babel-plugin-extract-messages@2.7.3-sl.20", "@sector-labs/lingui-babel-plugin-extract-messages@^2.7.3-sl.19":
   version "2.7.3-sl.20"
   resolved "https://registry.yarnpkg.com/@sector-labs/lingui-babel-plugin-extract-messages/-/lingui-babel-plugin-extract-messages-2.7.3-sl.20.tgz#241cdc8457e2b950d78dae69f424ed224824074e"
   integrity sha512-G5IiplBf8cnq3ybYpuV9vhGoIGCGfMptgwQOvUQ4XqszbDIQzOoeEsu4Ml/nSPtLsBK8EA8XHa+b522pc9HoRQ==
@@ -218,7 +218,7 @@
   resolved "https://registry.yarnpkg.com/@sector-labs/lingui-babel-plugin-transform-react/-/lingui-babel-plugin-transform-react-2.7.3-sl.20.tgz#152615bfac276435eb89ac0aecba8692cd7407c2"
   integrity sha512-NnR+w3rRRWUofvvBYWuD43Rm14OUmUUUv4PLnwfDAvewqGuNsHT6iCS8Nj1fj/rY6QPaaE1NpLXxlvoWl/9xGA==
 
-"@sector-labs/lingui-babel-preset-react@^2.7.3-sl.20":
+"@sector-labs/lingui-babel-preset-react@^2.7.3-sl.19":
   version "2.7.3-sl.20"
   resolved "https://registry.yarnpkg.com/@sector-labs/lingui-babel-preset-react/-/lingui-babel-preset-react-2.7.3-sl.20.tgz#0e2d0309d88215403f142b28798c525c73b683f2"
   integrity sha512-kbmnvVl4DqbMqaIMg8ztOMDYOjjQyekXwk2jbF8PvAYwIW3U3fSvCqmS5A9cC1LEKeSODH0CrI2ZXnc/8O72Vw==
@@ -226,7 +226,7 @@
     "@sector-labs/lingui-babel-plugin-transform-js" "2.7.3-sl.20"
     "@sector-labs/lingui-babel-plugin-transform-react" "2.7.3-sl.20"
 
-"@sector-labs/lingui-cli@^2.7.3-sl.20":
+"@sector-labs/lingui-cli@^2.7.3-sl.19":
   version "2.7.3-sl.20"
   resolved "https://registry.yarnpkg.com/@sector-labs/lingui-cli/-/lingui-cli-2.7.3-sl.20.tgz#3ca6f2d5d201e6f6aa5e3c85bf48559e9281625e"
   integrity sha512-Cpu+PrLMwOYyydYG5W3c5UDGX04igUzvfQUnjPyvnXwen77zlDYg5/Drm7yjWEovWNn1KIzuJl/oWj3LI/s4Ww==
