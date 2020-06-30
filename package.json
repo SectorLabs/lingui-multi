@@ -17,11 +17,9 @@
   "license": "MIT",
   "private": false,
   "dependencies": {
-    "@sector-labs/lingui-cli": "^2.7.3-sl.17",
+    "@sector-labs/lingui-cli": "^2.7.3-sl.20",
     "commander": "^2.15.1",
-    "cryptiles": "4.1.2",
-    "randomatic": "3.0.0",
-    "tmp": "^0.0.33"
+    "tmp": "^0.2.1"
   },
   "files": [
     "LICENSE",
@@ -29,19 +27,13 @@
     "dist"
   ],
   "devDependencies": {
-    "@babel/core": "^7.3.4",
-    "@sector-labs/lingui-babel-plugin-extract-messages": "^2.7.3-sl.17",
-    "@sector-labs/lingui-babel-preset-react": "^2.7.3-sl.17",
+    "@babel/core": "^7.10.3",
+    "@sector-labs/lingui-babel-plugin-extract-messages": "^2.7.3-sl.20",
+    "@sector-labs/lingui-babel-preset-react": "^2.7.3-sl.20",
     "babel-core": "7.0.0-bridge.0",
-    "babel-plugin-macros": "2.4.2",
-    "chai": "^4.1.2",
-    "eslint": "^5.15.1",
-    "eslint-config-standard": "^12.0.0",
-    "eslint-plugin-import": "^2.16.0",
-    "eslint-plugin-node": "^8.0.1",
-    "eslint-plugin-promise": "^4.0.1",
-    "eslint-plugin-standard": "^4.0.0",
-    "mocha": "^6.0.2"
+    "babel-plugin-macros": "^2.8.0",
+    "chai": "^4.2.0",
+    "mocha": "^8.0.1"
   },
   "scripts": {
     "test": "mocha tests/*.spec.js"
