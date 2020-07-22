@@ -6,6 +6,7 @@ const compile = require('@sector-labs/lingui-cli/api/compile')
 const commander = require('commander')
 const extract = require('@sector-labs/lingui-cli/api/extract')
 const tmp = require('tmp')
+const uglifyJS = require("uglify-js")
 
 const path = require('path')
 const fs = require('fs')
@@ -37,6 +38,7 @@ commander
   .option('-s, --strict', 'Strict compilation')
   .option('--removeIdentityPairs', 'Reduces the catalog size by removing the entries that have a translation identical with the translation')
   .option('--targetFolder <folder>', 'The path where to store the compiled catalogs. Defaults to [localesFolder]')
+  .option('--uglify', 'Uglify catalogs')
   .action(function(packageFile = './package.json', localesDir = './locale', args = {}) {
     try {
       // 1. Load the config from package.json
@@ -165,7 +167,7 @@ const compileCatalogs = (packageObject, localesDir, locales, args) => {
         getCatalogTargetFilePath(args.targetFolder || localesDir, locale) :
         getSubCatalogTargetFilePath(args.targetFolder || localesDir, locale, catalogName)
 
-      fs.writeFileSync(targetFile, jsData)
+      fs.writeFileSync(targetFile, args.uglify ? uglifyJS.minify(jsData).code: jsData)
 
       console.info(`${locale} ${Object.keys(screenedCatalogObject).length}`)
     })
