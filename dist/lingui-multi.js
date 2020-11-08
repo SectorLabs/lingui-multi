@@ -19,6 +19,7 @@ commander
   .command('extract [packageFile] [localesFolder]')
   .option('--clean', 'Removes obsolete messages from catalogs')
   .option('--upwardBabelRoot', 'Search for babel configs in the parent dirs')
+  .option('-q, --quiet', 'Disables stdout output')
   .action((packageFile = './package.json', localesDir = './locale', args = {}) => {
     try {
       const packageObject = loadPackageConfig(packageFile)
@@ -39,6 +40,7 @@ commander
   .option('--removeIdentityPairs', 'Reduces the catalog size by removing the entries that have a translation identical with the translation')
   .option('--targetFolder <folder>', 'The path where to store the compiled catalogs. Defaults to [localesFolder]')
   .option('--uglify', 'Uglify catalogs')
+  .option('-q, --quiet', 'Disables stdout output')
   .action(function(packageFile = './package.json', localesDir = './locale', args = {}) {
     try {
       // 1. Load the config from package.json
@@ -119,15 +121,19 @@ const extractCatalogs = (packageFile, packageObject, localesDir, locales, args) 
       writeMetadataCatalog(sortObjectKeys(complexCatalog), localesDir, locale)
     }
 
-    console.info(`${locale} ${Object.keys(minimalCatalog).length}`)
+    if (!args.quiet) {
+        console.info(`${locale} ${Object.keys(minimalCatalog).length}`)
+    }
   })
 }
 
 const compileCatalogs = (packageObject, localesDir, locales, args) => {
   // Iterate the language catalogs
   Object.keys(packageObject['lingui-multi']).forEach(catalogName => {
-    console.info(`\n\nCatalog: ${catalogName}`)
-    console.info('================')
+    if (!args.quiet) {
+        console.info(`\n\nCatalog: ${catalogName}`)
+        console.info('================')
+    }
 
     // Grab the ignore patterns
     const ignorePattern = getSubCatalogIgnoreRegex(packageObject, catalogName)
@@ -169,7 +175,9 @@ const compileCatalogs = (packageObject, localesDir, locales, args) => {
 
       fs.writeFileSync(targetFile, args.uglify ? uglifyJS.minify(jsData).code: jsData)
 
-      console.info(`${locale} ${Object.keys(screenedCatalogObject).length}`)
+      if (!args.quiet) {
+          console.info(`${locale} ${Object.keys(screenedCatalogObject).length}`)
+       }
     })
   })
 }
