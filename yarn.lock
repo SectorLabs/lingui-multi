@@ -200,41 +200,41 @@
     lodash "^4.17.13"
     to-fast-properties "^2.0.0"
 
-"@sector-labs/lingui-babel-plugin-extract-messages@2.7.3-sl.20", "@sector-labs/lingui-babel-plugin-extract-messages@^2.7.3-sl.19":
-  version "2.7.3-sl.20"
-  resolved "https://registry.yarnpkg.com/@sector-labs/lingui-babel-plugin-extract-messages/-/lingui-babel-plugin-extract-messages-2.7.3-sl.20.tgz#241cdc8457e2b950d78dae69f424ed224824074e"
-  integrity sha512-G5IiplBf8cnq3ybYpuV9vhGoIGCGfMptgwQOvUQ4XqszbDIQzOoeEsu4Ml/nSPtLsBK8EA8XHa+b522pc9HoRQ==
+"@sector-labs/lingui-babel-plugin-extract-messages@2.7.3-sl.19":
+  version "2.7.3-sl.19"
+  resolved "https://registry.yarnpkg.com/@sector-labs/lingui-babel-plugin-extract-messages/-/lingui-babel-plugin-extract-messages-2.7.3-sl.19.tgz#46b271a7956a2ec741de7b42995feea477e665f1"
+  integrity sha512-BjneBd5a0UDlTvCroBn7HTv+XE6ul43EWaCl5SPyr4ORH53CZyIYrVmhewS5CGMtiO+viotVHzP/pfzUNeFGUA==
   dependencies:
-    "@sector-labs/lingui-conf" "2.7.3-sl.20"
+    "@sector-labs/lingui-conf" "2.7.3-sl.19"
     babel-generator "^6.26.1"
 
-"@sector-labs/lingui-babel-plugin-transform-js@2.7.3-sl.20":
-  version "2.7.3-sl.20"
-  resolved "https://registry.yarnpkg.com/@sector-labs/lingui-babel-plugin-transform-js/-/lingui-babel-plugin-transform-js-2.7.3-sl.20.tgz#475d670e525f2ecc6e3ffba364e87e88df2e120b"
-  integrity sha512-o0/Gkgj1F3rAEJTIeLqnN6FRXYlo5liaV9CE9h3/WUhFSmUPdJEAorqzyE5NKWqLhFJWZzu4FFXasuq9W1Hklw==
+"@sector-labs/lingui-babel-plugin-transform-js@2.7.3-sl.19":
+  version "2.7.3-sl.19"
+  resolved "https://registry.yarnpkg.com/@sector-labs/lingui-babel-plugin-transform-js/-/lingui-babel-plugin-transform-js-2.7.3-sl.19.tgz#6a365e2d4d08821e6e2a8d1ed23d1b92b7ee2aec"
+  integrity sha512-0Y+EXughPU2WqjWeW9H6Evy7VhFDAfa+1nmulGonlxOpG/JwMS0MnLDscnzHIkYjbZFkZXJ/xaj8PW3N0s6FGA==
 
-"@sector-labs/lingui-babel-plugin-transform-react@2.7.3-sl.20":
-  version "2.7.3-sl.20"
-  resolved "https://registry.yarnpkg.com/@sector-labs/lingui-babel-plugin-transform-react/-/lingui-babel-plugin-transform-react-2.7.3-sl.20.tgz#152615bfac276435eb89ac0aecba8692cd7407c2"
-  integrity sha512-NnR+w3rRRWUofvvBYWuD43Rm14OUmUUUv4PLnwfDAvewqGuNsHT6iCS8Nj1fj/rY6QPaaE1NpLXxlvoWl/9xGA==
+"@sector-labs/lingui-babel-plugin-transform-react@2.7.3-sl.19":
+  version "2.7.3-sl.19"
+  resolved "https://registry.yarnpkg.com/@sector-labs/lingui-babel-plugin-transform-react/-/lingui-babel-plugin-transform-react-2.7.3-sl.19.tgz#f57e616e312b699bba663e83c8ac0494b85864da"
+  integrity sha512-lm9yTL69K4e/lDFOqQYpJyzHCtxzKZbm8XHviDHPQCl/dt4mZQCP7ITndCRBrXIfSuzCkdostquIy3oXABeLtQ==
 
-"@sector-labs/lingui-babel-preset-react@^2.7.3-sl.19":
-  version "2.7.3-sl.20"
-  resolved "https://registry.yarnpkg.com/@sector-labs/lingui-babel-preset-react/-/lingui-babel-preset-react-2.7.3-sl.20.tgz#0e2d0309d88215403f142b28798c525c73b683f2"
-  integrity sha512-kbmnvVl4DqbMqaIMg8ztOMDYOjjQyekXwk2jbF8PvAYwIW3U3fSvCqmS5A9cC1LEKeSODH0CrI2ZXnc/8O72Vw==
+"@sector-labs/lingui-babel-preset-react@2.7.3-sl.19":
+  version "2.7.3-sl.19"
+  resolved "https://registry.yarnpkg.com/@sector-labs/lingui-babel-preset-react/-/lingui-babel-preset-react-2.7.3-sl.19.tgz#befd2f55e0142e78dce18b05486a2e045cb4529e"
+  integrity sha512-fKLNK8IVqmTlTlqoG2jvCyOyBTSFIohLskYYVCKCFeq41aF4p39jsttpQ88GjK7MNaABfXDozFLUyGoUt7g/EA==
   dependencies:
-    "@sector-labs/lingui-babel-plugin-transform-js" "2.7.3-sl.20"
-    "@sector-labs/lingui-babel-plugin-transform-react" "2.7.3-sl.20"
+    "@sector-labs/lingui-babel-plugin-transform-js" "2.7.3-sl.19"
+    "@sector-labs/lingui-babel-plugin-transform-react" "2.7.3-sl.19"
 
-"@sector-labs/lingui-cli@^2.7.3-sl.19":
-  version "2.7.3-sl.20"
-  resolved "https://registry.yarnpkg.com/@sector-labs/lingui-cli/-/lingui-cli-2.7.3-sl.20.tgz#3ca6f2d5d201e6f6aa5e3c85bf48559e9281625e"
-  integrity sha512-Cpu+PrLMwOYyydYG5W3c5UDGX04igUzvfQUnjPyvnXwen77zlDYg5/Drm7yjWEovWNn1KIzuJl/oWj3LI/s4Ww==
+"@sector-labs/lingui-cli@2.7.3-sl.19":
+  version "2.7.3-sl.19"
+  resolved "https://registry.yarnpkg.com/@sector-labs/lingui-cli/-/lingui-cli-2.7.3-sl.19.tgz#9d66c8a0534e86568f797c69f3013bc48756a03e"
+  integrity sha512-0G6l5iompuzCETpC+jGPsritZqG/wCpkj9grDMJzYfwd2iS1CNFL0MSIl2c8hlqyAefJ+zZECfFpzgHGSGXhxA==
   dependencies:
-    "@sector-labs/lingui-babel-plugin-extract-messages" "2.7.3-sl.20"
-    "@sector-labs/lingui-babel-plugin-transform-js" "2.7.3-sl.20"
-    "@sector-labs/lingui-babel-plugin-transform-react" "2.7.3-sl.20"
-    "@sector-labs/lingui-conf" "2.7.3-sl.20"
+    "@sector-labs/lingui-babel-plugin-extract-messages" "2.7.3-sl.19"
+    "@sector-labs/lingui-babel-plugin-transform-js" "2.7.3-sl.19"
+    "@sector-labs/lingui-babel-plugin-transform-react" "2.7.3-sl.19"
+    "@sector-labs/lingui-conf" "2.7.3-sl.19"
     babel-generator "^6.26.1"
     babel-plugin-syntax-jsx "^6.18.0"
     babel-runtime "^6.26.0"
@@ -258,10 +258,10 @@
     ramda "^0.25.0"
     typescript "^2.9.2"
 
-"@sector-labs/lingui-conf@2.7.3-sl.20":
-  version "2.7.3-sl.20"
-  resolved "https://registry.yarnpkg.com/@sector-labs/lingui-conf/-/lingui-conf-2.7.3-sl.20.tgz#0e4e0eecef385d3876ae54d8a179daa2f24cb08b"
-  integrity sha512-raEUjnaJcVcwOBvSwyjybuyGnv+c8qAVBbPlr673eUey0eh3Oj3m/2uqU7BUBuJMG6eUDjtyEqLudWp85SQGjQ==
+"@sector-labs/lingui-conf@2.7.3-sl.19":
+  version "2.7.3-sl.19"
+  resolved "https://registry.yarnpkg.com/@sector-labs/lingui-conf/-/lingui-conf-2.7.3-sl.19.tgz#f6c392306317850b707eb709a08d48e9accd527c"
+  integrity sha512-8QpZsUffFN5UhZVWa5jda3qEG2erKmdSe9FhZRCQMKLxJum0Ymy5lUtRN+OGOfQgXcuJdjE/87w915tJqzT1Gg==
   dependencies:
     chalk "^2.3.0"
     cosmiconfig "^5.0.6"
@@ -1231,11 +1231,9 @@ json-parse-better-errors@^1.0.1:
   resolved "https://registry.yarnpkg.com/json-parse-better-errors/-/json-parse-better-errors-1.0.2.tgz#bb867cfb3450e69107c131d1c514bab3dc8bcaa9"
 
 json5@^2.1.2:
-  version "2.1.3"
-  resolved "https://registry.yarnpkg.com/json5/-/json5-2.1.3.tgz#c9b0f7fa9233bfe5807fe66fcf3a5617ed597d43"
-  integrity sha512-KXPvOm8K9IJKFM0bmdn8QXh7udDh1g/giieX0NLCaMnb4hEiVFqnop2ImTXCc5e0/oHz3LTqmHGtExn5hfMkOA==
-  dependencies:
-    minimist "^1.2.5"
+  version "2.2.3"
+  resolved "https://registry.yarnpkg.com/json5/-/json5-2.2.3.tgz#78cd6f1a19bdc12b73db5ad0c61efd66c1e29283"
+  integrity sha512-XmOWe7eyHYH14cLdVPoyg+GOH3rYX++KpzrylJwSW98t3Nk+U8XOl8FWKOgwtzdb8lXGf6zYwDUzeHMWfxasyg==
 
 leven@^2.1.0:
   version "2.1.0"
@@ -1326,11 +1324,11 @@ minimist@0.0.8:
   version "0.0.8"
   resolved "https://registry.yarnpkg.com/minimist/-/minimist-0.0.8.tgz#857fcabfc3397d2625b8228262e86aa7a011b05d"
 
-minimist@1.2.0, minimist@^1.2.0:
+minimist@1.2.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/minimist/-/minimist-1.2.0.tgz#a35008b20f41383eec1fb914f4cd5df79a264284"
 
-minimist@^1.2.5:
+minimist@^1.2.0:
   version "1.2.5"
   resolved "https://registry.yarnpkg.com/minimist/-/minimist-1.2.5.tgz#67d66014b66a6a8aaa0c083c5fd58df4e4e97602"
   integrity sha512-FM9nNUYrRBAELZQT3xeZQ7fmMOBg6nWNmJKTcgsJeaLstP/UODVpGsr5OhXhhXg6f+qtJ8uiZ+PUxkDWcgIXLw==
