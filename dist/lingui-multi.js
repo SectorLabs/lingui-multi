@@ -11,6 +11,8 @@ const uglifyJS = require("uglify-js")
 const path = require('path')
 const fs = require('fs')
 
+const { collectFromFiles } = require('./collect');
+
 // Set up version command
 commander.version(require('../package.json').version)
 
@@ -28,6 +30,7 @@ commander
 
       extractCatalogs(packageFile, packageObject, localesDir, locales, args)
     } catch (error) {
+        throw error;
       console.error(error.message)
       process.exit(1)
     }
@@ -71,9 +74,12 @@ const extractCatalogs = (packageFile, packageObject, localesDir, locales, args) 
   if (args.upwardBabelRoot) {
     options.babelOptions = { "rootMode": "upward" };
   }
-  extract.extract(options.srcPathDirs, targetDir, options)
 
-  const rawCatalog = extract.collect(targetDir)
+  // extract.extract(options.srcPathDirs, targetDir, options)
+
+  // const rawCatalog = extract.collect(targetDir)
+  const rawCatalog = collectFromFiles(options.srcPathDirs, options.ignore);
+  // console.log(rawCatalog);
 
   // Prepopulate with empty translations
   const linguiCatalog = Object.keys(rawCatalog).reduce((final, key) => Object.assign(final, {
@@ -335,13 +341,14 @@ const filterTranslationOnly = catalog =>
       [translationKey]: filterProperties(catalog[translationKey], ['translation'])
     }), {})
 
-const simplifyComplexCatalog = catalog =>
-  Object.keys(catalog)
+const simplifyComplexCatalog = catalog => {
+  return Object.keys(catalog)
     .reduce((simplifiedCatalog, key) => Object.assign(simplifiedCatalog, {
       [key]: Object.assign(catalog[key], {
         origin: catalog[key].origin.map(originArray => originArray.shift())
       })
-    }), {})
+    }), {});
+};
 
 module.exports = {
   loadLinguiCatalog,
