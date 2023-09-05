@@ -200,41 +200,41 @@
     lodash "^4.17.13"
     to-fast-properties "^2.0.0"
 
-"@sector-labs/lingui-babel-plugin-extract-messages@2.7.3-sl.20", "@sector-labs/lingui-babel-plugin-extract-messages@^2.7.3-sl.19":
-  version "2.7.3-sl.20"
-  resolved "https://registry.yarnpkg.com/@sector-labs/lingui-babel-plugin-extract-messages/-/lingui-babel-plugin-extract-messages-2.7.3-sl.20.tgz#241cdc8457e2b950d78dae69f424ed224824074e"
-  integrity sha512-G5IiplBf8cnq3ybYpuV9vhGoIGCGfMptgwQOvUQ4XqszbDIQzOoeEsu4Ml/nSPtLsBK8EA8XHa+b522pc9HoRQ==
+"@sector-labs/lingui-babel-plugin-extract-messages@2.7.3-sl.19":
+  version "2.7.3-sl.19"
+  resolved "https://registry.yarnpkg.com/@sector-labs/lingui-babel-plugin-extract-messages/-/lingui-babel-plugin-extract-messages-2.7.3-sl.19.tgz#46b271a7956a2ec741de7b42995feea477e665f1"
+  integrity sha512-BjneBd5a0UDlTvCroBn7HTv+XE6ul43EWaCl5SPyr4ORH53CZyIYrVmhewS5CGMtiO+viotVHzP/pfzUNeFGUA==
   dependencies:
-    "@sector-labs/lingui-conf" "2.7.3-sl.20"
+    "@sector-labs/lingui-conf" "2.7.3-sl.19"
     babel-generator "^6.26.1"
 
-"@sector-labs/lingui-babel-plugin-transform-js@2.7.3-sl.20":
-  version "2.7.3-sl.20"
-  resolved "https://registry.yarnpkg.com/@sector-labs/lingui-babel-plugin-transform-js/-/lingui-babel-plugin-transform-js-2.7.3-sl.20.tgz#475d670e525f2ecc6e3ffba364e87e88df2e120b"
-  integrity sha512-o0/Gkgj1F3rAEJTIeLqnN6FRXYlo5liaV9CE9h3/WUhFSmUPdJEAorqzyE5NKWqLhFJWZzu4FFXasuq9W1Hklw==
+"@sector-labs/lingui-babel-plugin-transform-js@2.7.3-sl.19":
+  version "2.7.3-sl.19"
+  resolved "https://registry.yarnpkg.com/@sector-labs/lingui-babel-plugin-transform-js/-/lingui-babel-plugin-transform-js-2.7.3-sl.19.tgz#6a365e2d4d08821e6e2a8d1ed23d1b92b7ee2aec"
+  integrity sha512-0Y+EXughPU2WqjWeW9H6Evy7VhFDAfa+1nmulGonlxOpG/JwMS0MnLDscnzHIkYjbZFkZXJ/xaj8PW3N0s6FGA==
 
-"@sector-labs/lingui-babel-plugin-transform-react@2.7.3-sl.20":
-  version "2.7.3-sl.20"
-  resolved "https://registry.yarnpkg.com/@sector-labs/lingui-babel-plugin-transform-react/-/lingui-babel-plugin-transform-react-2.7.3-sl.20.tgz#152615bfac276435eb89ac0aecba8692cd7407c2"
-  integrity sha512-NnR+w3rRRWUofvvBYWuD43Rm14OUmUUUv4PLnwfDAvewqGuNsHT6iCS8Nj1fj/rY6QPaaE1NpLXxlvoWl/9xGA==
+"@sector-labs/lingui-babel-plugin-transform-react@2.7.3-sl.19":
+  version "2.7.3-sl.19"
+  resolved "https://registry.yarnpkg.com/@sector-labs/lingui-babel-plugin-transform-react/-/lingui-babel-plugin-transform-react-2.7.3-sl.19.tgz#f57e616e312b699bba663e83c8ac0494b85864da"
+  integrity sha512-lm9yTL69K4e/lDFOqQYpJyzHCtxzKZbm8XHviDHPQCl/dt4mZQCP7ITndCRBrXIfSuzCkdostquIy3oXABeLtQ==
 
-"@sector-labs/lingui-babel-preset-react@^2.7.3-sl.19":
-  version "2.7.3-sl.20"
-  resolved "https://registry.yarnpkg.com/@sector-labs/lingui-babel-preset-react/-/lingui-babel-preset-react-2.7.3-sl.20.tgz#0e2d0309d88215403f142b28798c525c73b683f2"
-  integrity sha512-kbmnvVl4DqbMqaIMg8ztOMDYOjjQyekXwk2jbF8PvAYwIW3U3fSvCqmS5A9cC1LEKeSODH0CrI2ZXnc/8O72Vw==
+"@sector-labs/lingui-babel-preset-react@2.7.3-sl.19":
+  version "2.7.3-sl.19"
+  resolved "https://registry.yarnpkg.com/@sector-labs/lingui-babel-preset-react/-/lingui-babel-preset-react-2.7.3-sl.19.tgz#befd2f55e0142e78dce18b05486a2e045cb4529e"
+  integrity sha512-fKLNK8IVqmTlTlqoG2jvCyOyBTSFIohLskYYVCKCFeq41aF4p39jsttpQ88GjK7MNaABfXDozFLUyGoUt7g/EA==
   dependencies:
-    "@sector-labs/lingui-babel-plugin-transform-js" "2.7.3-sl.20"
-    "@sector-labs/lingui-babel-plugin-transform-react" "2.7.3-sl.20"
+    "@sector-labs/lingui-babel-plugin-transform-js" "2.7.3-sl.19"
+    "@sector-labs/lingui-babel-plugin-transform-react" "2.7.3-sl.19"
 
-"@sector-labs/lingui-cli@^2.7.3-sl.19":
-  version "2.7.3-sl.20"
-  resolved "https://registry.yarnpkg.com/@sector-labs/lingui-cli/-/lingui-cli-2.7.3-sl.20.tgz#3ca6f2d5d201e6f6aa5e3c85bf48559e9281625e"
-  integrity sha512-Cpu+PrLMwOYyydYG5W3c5UDGX04igUzvfQUnjPyvnXwen77zlDYg5/Drm7yjWEovWNn1KIzuJl/oWj3LI/s4Ww==
+"@sector-labs/lingui-cli@2.7.3-sl.19":
+  version "2.7.3-sl.19"
+  resolved "https://registry.yarnpkg.com/@sector-labs/lingui-cli/-/lingui-cli-2.7.3-sl.19.tgz#9d66c8a0534e86568f797c69f3013bc48756a03e"
+  integrity sha512-0G6l5iompuzCETpC+jGPsritZqG/wCpkj9grDMJzYfwd2iS1CNFL0MSIl2c8hlqyAefJ+zZECfFpzgHGSGXhxA==
   dependencies:
-    "@sector-labs/lingui-babel-plugin-extract-messages" "2.7.3-sl.20"
-    "@sector-labs/lingui-babel-plugin-transform-js" "2.7.3-sl.20"
-    "@sector-labs/lingui-babel-plugin-transform-react" "2.7.3-sl.20"
-    "@sector-labs/lingui-conf" "2.7.3-sl.20"
+    "@sector-labs/lingui-babel-plugin-extract-messages" "2.7.3-sl.19"
+    "@sector-labs/lingui-babel-plugin-transform-js" "2.7.3-sl.19"
+    "@sector-labs/lingui-babel-plugin-transform-react" "2.7.3-sl.19"
+    "@sector-labs/lingui-conf" "2.7.3-sl.19"
     babel-generator "^6.26.1"
     babel-plugin-syntax-jsx "^6.18.0"
     babel-runtime "^6.26.0"
@@ -258,16 +258,89 @@
     ramda "^0.25.0"
     typescript "^2.9.2"
 
-"@sector-labs/lingui-conf@2.7.3-sl.20":
-  version "2.7.3-sl.20"
-  resolved "https://registry.yarnpkg.com/@sector-labs/lingui-conf/-/lingui-conf-2.7.3-sl.20.tgz#0e4e0eecef385d3876ae54d8a179daa2f24cb08b"
-  integrity sha512-raEUjnaJcVcwOBvSwyjybuyGnv+c8qAVBbPlr673eUey0eh3Oj3m/2uqU7BUBuJMG6eUDjtyEqLudWp85SQGjQ==
+"@sector-labs/lingui-conf@2.7.3-sl.19":
+  version "2.7.3-sl.19"
+  resolved "https://registry.yarnpkg.com/@sector-labs/lingui-conf/-/lingui-conf-2.7.3-sl.19.tgz#f6c392306317850b707eb709a08d48e9accd527c"
+  integrity sha512-8QpZsUffFN5UhZVWa5jda3qEG2erKmdSe9FhZRCQMKLxJum0Ymy5lUtRN+OGOfQgXcuJdjE/87w915tJqzT1Gg==
   dependencies:
     chalk "^2.3.0"
     cosmiconfig "^5.0.6"
     jest-regex-util "^23.3.0"
     jest-validate "^23.5.0"
     pkg-conf "^2.1.0"
+
+"@swc/core-darwin-arm64@1.3.82":
+  version "1.3.82"
+  resolved "https://registry.yarnpkg.com/@swc/core-darwin-arm64/-/core-darwin-arm64-1.3.82.tgz#bbf9874747b51053d8a59ea26c3e235c326f24a3"
+  integrity sha512-JfsyDW34gVKD3uE0OUpUqYvAD3yseEaicnFP6pB292THtLJb0IKBBnK50vV/RzEJtc1bR3g1kNfxo2PeurZTrA==
+
+"@swc/core-darwin-x64@1.3.82":
+  version "1.3.82"
+  resolved "https://registry.yarnpkg.com/@swc/core-darwin-x64/-/core-darwin-x64-1.3.82.tgz#145cdde16678e0d793620035783e5b413a16ac43"
+  integrity sha512-ogQWgNMq7qTpITjcP3dnzkFNj7bh6SwMr859GvtOTrE75H7L7jDWxESfH4f8foB/LGxBKiDNmxKhitCuAsZK4A==
+
+"@swc/core-linux-arm-gnueabihf@1.3.82":
+  version "1.3.82"
+  resolved "https://registry.yarnpkg.com/@swc/core-linux-arm-gnueabihf/-/core-linux-arm-gnueabihf-1.3.82.tgz#0c2f32c5793f2ac8e8ccf416aec84d016c30ef7b"
+  integrity sha512-7TMXG1lXlNhD0kUiEqs+YlGV4irAdBa2quuy+XI3oJf2fBK6dQfEq4xBy65B3khrorzQS3O0oDGQ+cmdpHExHA==
+
+"@swc/core-linux-arm64-gnu@1.3.82":
+  version "1.3.82"
+  resolved "https://registry.yarnpkg.com/@swc/core-linux-arm64-gnu/-/core-linux-arm64-gnu-1.3.82.tgz#2313d4901fa0ebdd2a0f189909073e1e8a07f1d6"
+  integrity sha512-26JkOujbzcItPAmIbD5vHJxQVy5ihcSu3YHTKwope1h28sApZdtE7S3e2G3gsZRTIdsCQkXUtAQeqHxGWWR3pw==
+
+"@swc/core-linux-arm64-musl@1.3.82":
+  version "1.3.82"
+  resolved "https://registry.yarnpkg.com/@swc/core-linux-arm64-musl/-/core-linux-arm64-musl-1.3.82.tgz#6e96cf6e52e647fecf27511d766bea90e96f8a2f"
+  integrity sha512-8Izj9tuuMpoc3cqiPBRtwqpO1BZ/+sfZVsEhLxrbOFlcSb8LnKyMle1g3JMMUwI4EU75RGVIzZMn8A6GOKdJbA==
+
+"@swc/core-linux-x64-gnu@1.3.82":
+  version "1.3.82"
+  resolved "https://registry.yarnpkg.com/@swc/core-linux-x64-gnu/-/core-linux-x64-gnu-1.3.82.tgz#6275c10d7c8c0768550bc7934c9dd8cde4881d92"
+  integrity sha512-0GSrIBScQwTaPv46T2qB7XnDYxndRCpwH4HMjh6FN+I+lfPUhTSJKW8AonqrqT1TbpFIgvzQs7EnTsD7AnSCow==
+
+"@swc/core-linux-x64-musl@1.3.82":
+  version "1.3.82"
+  resolved "https://registry.yarnpkg.com/@swc/core-linux-x64-musl/-/core-linux-x64-musl-1.3.82.tgz#edb98c30bd0de42bf1a63469937630d942c71988"
+  integrity sha512-KJUnaaepDKNzrEbwz4jv0iC3/t9x0NSoe06fnkAlhh2+NFKWKKJhVCOBTrpds8n7eylBDIXUlK34XQafjVMUdg==
+
+"@swc/core-win32-arm64-msvc@1.3.82":
+  version "1.3.82"
+  resolved "https://registry.yarnpkg.com/@swc/core-win32-arm64-msvc/-/core-win32-arm64-msvc-1.3.82.tgz#0a8e9b361aac37d01f684c8a3d3e94e5f8c3b14f"
+  integrity sha512-TR3MHKhDYIyGyFcyl2d/p1ftceXcubAhX5wRSOdtOyr5+K/v3jbyCCqN7bbqO5o43wQVCwwR/drHleYyDZvg8Q==
+
+"@swc/core-win32-ia32-msvc@1.3.82":
+  version "1.3.82"
+  resolved "https://registry.yarnpkg.com/@swc/core-win32-ia32-msvc/-/core-win32-ia32-msvc-1.3.82.tgz#096854ff764282766271f1354ee1214358a8bf01"
+  integrity sha512-ZX4HzVVt6hs84YUg70UvyBJnBOIspmQQM0iXSzBvOikk3zRoN7BnDwQH4GScvevCEBuou60+i4I6d5kHLOfh8Q==
+
+"@swc/core-win32-x64-msvc@1.3.82":
+  version "1.3.82"
+  resolved "https://registry.yarnpkg.com/@swc/core-win32-x64-msvc/-/core-win32-x64-msvc-1.3.82.tgz#1181070bff4a13a7fcc7f1020eef1571f8c1257a"
+  integrity sha512-4mJMnex21kbQoaHeAmHnVwQN9/XAfPszJ6n9HI7SVH+aAHnbBIR0M59/b50/CJMjTj5niUGk7EwQ3nhVNOG32g==
+
+"@swc/core@^1.3.82":
+  version "1.3.82"
+  resolved "https://registry.yarnpkg.com/@swc/core/-/core-1.3.82.tgz#8f6c53db3c23a1769b6c5085fbcb3b1df9548a40"
+  integrity sha512-jpC1a18HMH67018Ij2jh+hT7JBFu7ZKcQVfrZ8K6JuEY+kjXmbea07P9MbQUZbAe0FB+xi3CqEVCP73MebodJQ==
+  dependencies:
+    "@swc/types" "^0.1.4"
+  optionalDependencies:
+    "@swc/core-darwin-arm64" "1.3.82"
+    "@swc/core-darwin-x64" "1.3.82"
+    "@swc/core-linux-arm-gnueabihf" "1.3.82"
+    "@swc/core-linux-arm64-gnu" "1.3.82"
+    "@swc/core-linux-arm64-musl" "1.3.82"
+    "@swc/core-linux-x64-gnu" "1.3.82"
+    "@swc/core-linux-x64-musl" "1.3.82"
+    "@swc/core-win32-arm64-msvc" "1.3.82"
+    "@swc/core-win32-ia32-msvc" "1.3.82"
+    "@swc/core-win32-x64-msvc" "1.3.82"
+
+"@swc/types@^0.1.4":
+  version "0.1.4"
+  resolved "https://registry.yarnpkg.com/@swc/types/-/types-0.1.4.tgz#8d647e111dc97a8e2881bf71c2ee2d011698ff10"
+  integrity sha512-z/G02d+59gyyUb7KYhKi9jOhicek6QD2oMaotUyG+lUkybpXoV49dY9bj7Ah5Q+y7knK2jU67UTX9FyfGzaxQg==
 
 "@types/parse-json@^4.0.0":
   version "4.0.0"
