@@ -1,11 +1,27 @@
 const swc = require('@swc/core')
 const { Visitor } = require('@swc/core/Visitor')
+const { omit } = require('lodash');
+const {
+    parseCallPlurals,
+    parseTextFromJSXElement,
+    parseJSXPlurals,
+    parseTextFromTemplateLiteral,
+} = require('./parser');
 
-class MyVisitor extends Visitor {
+// replace whitespace before/after newline with single space
+const nlRe = /\s*(?:\r\n|\r|\n)+\s*/g
+// remove whitespace before/after tag
+const nlTagRe = /(?:(>)(?:\r\n|\r|\n)+\s+|(?:\r\n|\r|\n)+\s+(?=<))/g
+
+class ExtractVisitor extends Visitor {
     constructor() {
         super();
 
-        this.translatableStrings = [];
+        this.localTransComponentName = 'Trans';
+        this.localSelectOrdinalImportName = 'SelectOrdinal';
+        this.localPluralImportName = 'Plural';
+        this.translatableStrings = {};
+        this.visitedStrings = {};
     }
 
     visitTaggedTemplateExpression(n) {
@@ -14,138 +30,69 @@ class MyVisitor extends Visitor {
             return expr;
         }
 
-        const str = this.parseTextFromTemplateLiteral(expr.template);
-        this.translatableStrings.push(str.replace('  ', ' ').trim());
+        const str = this.cleanText(parseTextFromTemplateLiteral(expr.template));
+        this.translatableStrings[str.trim()] = true;
         return expr;
     }
 
     visitTsType(n) {
     }
 
-    cleanIdentifier(value) {
-        if (value.startsWith('min') || value.startsWith('max')) {
-            return `_${value}`;
-        }
+    visitImportDeclaration(node) {
+        const moduleName = node.source.value
+        if ("@lingui/react" !== moduleName) return
 
-        return value;
+        const importDeclarations = {}
+          node.specifiers.forEach((specifier) => {
+              if(specifier.imported && specifier.imported.value) {
+                  importDeclarations[specifier.imported.value] =
+                      specifier.local.value
+              }
+          })
+
+          this.localTransComponentName = importDeclarations["Trans"] || "Trans";
+          this.localSelectOrdinalImportName = importDeclarations["SelectOrdinal"] || "SelectOrdinal";
+          this.localPluralImportName = importDeclarations["Plural"] || "Plural";
     }
 
     visitJSXElement(n) {
         const expr = super.visitJSXElement(n);
-        if (expr.opening.name.value !== 'T') {
-            return expr;
+        if(expr.opening.name.value === this.localSelectOrdinalImportName || expr.opening.name.value === this.localPluralImportName) {
+            const str = this.cleanText(parseJSXPlurals(expr, { index: 0, localTransComponentName: this.localTransComponentName, visitedStrings: this.visitedStrings }));
+            if(str) {
+                this.translatableStrings[str] = true;
+            }
+        }  else if (expr.opening.name.value === this.localTransComponentName) {
+            const str = this.cleanText(parseTextFromJSXElement(expr, { elementIndex: 0, unknownIndex: 0, localTransComponentName: this.localTransComponentName, visitedStrings: this.visitedStrings }));
+            if(str) {
+                this.translatableStrings[str] = true;
+            }
         }
-
-        const str = this.parseTextFromJSXElement(expr, { elementIndex: 0, unknownIndex: 0 });
-        this.translatableStrings.push(str.replace('  ', ' ').trim());
 
         return expr;
     }
 
-    cleanText(value) {
-        const result = value.replace('\r', '').replace('\n', '').replace(/\s+/g, ' ');
-        return result;
-    }
-
-    parseTextFromTemplateLiteral(expr) {
-        const elements = [
-            ...expr.expressions || [],
-            ...expr.quasis || [],
-        ].sort((a, b) => {
-            if (a.span.start < b.span.start) {
-                return -1;
-            }
-
-            if (a.span.start > b.span.start) {
-                return 1;
-            }
-
-            return 0;
-        });
-
-        let str = "";
-        let unknownParamIndex = 0;
-
-        elements.forEach(element => {
-            if (element.type === 'Identifier') {
-                str += `{${this.cleanIdentifier(element.value)}}`;
-            } else if (element.type === 'TemplateElement') {
-                str += element.raw;
-            } else {
-                str += `{${unknownParamIndex}}`;
-                unknownParamIndex++;
-            }
-        });
-
-        return str;
-    }
-
-    parseTextFromJSXElement(element, context = { elementIndex: 0, unknownIndex: 0 }, isRoot = true) {
-        let str = "";
-
-        if (element.type === 'JSXText') {
-            const value = this.cleanText(element.value);
-            if (value) {
-                str += value;
-            }
-        } else if (element.type === 'JSXElement') {
-            const elementIndex = context.elementIndex;
-
-            if (element.opening && !isRoot) {
-                if (!element.closing) {
-                    str += `<${elementIndex}/>`;
-                } else {
-                    str += `<${elementIndex}>`;
-                }
-                context.elementIndex++;
-            }
-
-            if (element.children) {
-                element.children.forEach(child => {
-                    str += this.parseTextFromJSXElement(child, context, false);
-                });
-            }
-
-            if (element.closing && !isRoot) {
-                str += `</${elementIndex}>`;
-                if (!element.opening) {
-                    context.elementIndex++;
-                }
-            }
-        } else if (element.type === 'JSXExpressionContainer') {
-            if (element.expression.type === 'Identifier') {
-                str += `{${this.cleanIdentifier(element.expression.value)}}`;
-            } else if (element.expression.type === 'StringLiteral') {
-                str += element.expression.value;
-            } else if (element.expression.type === 'TemplateLiteral') {
-                str += this.parseTextFromTemplateLiteral(element.expression);
-            } else {
-                str += `{${context.unknownIndex}}`;
-                context.unknownIndex++;
-            }
-        } else {
-            console.log("OH NEE 2", element);
+    visitCallExpression(n) {
+        const expr = super.visitCallExpression(n);
+        if(!expr.callee.object || !expr.callee.property){
+            return expr;
         }
+        if(expr.callee.object.type !== 'Identifier' || expr.callee.object.value !== 'i18n' || expr.callee.property.value !== 'plural'){
+            return expr;
+        }
+        const str = this.cleanText(parseCallPlurals(expr));
+        this.translatableStrings[str] = true;
+        return expr;
+    }
 
-        return str;
+    getCleanedStrings() {
+        return Object.keys(omit(this.translatableStrings, Object.keys(this.visitedStrings)));
+    }
+
+    cleanText(value) {
+        return value.replace(nlTagRe, "$1").replace(nlRe, " ").trim();
     }
 }
-
-// const filename = "strat/searchHistory/renderSubtitle.ts";
-// const filename = "dubizzle-lb/dubizzle-lb/adDetails/components/requestDeliveryDescription.tsx";
-// const filename = "horizontal/horizontal/adManagement/analytics.tsx";
-// const filename = "horizontal/horizontal/payment/providerCashPayment/providerCashPaymentBody.tsx";
-// const filename = "explorer/explorer/leaderboard/activity/activityTypeData.tsx";
-// const filename = "strat/reporting/adPerformance/adImpressionsChart.tsx";
-//
-const fileList = [
-    "strat/strat/searchHistory/renderSubtitle.ts",
-    "dubizzle-lb/dubizzle-lb/adDetails/components/requestDeliveryDescription.tsx",
-    "horizontal/horizontal/adManagement/analytics.tsx",
-    "horizontal/horizontal/payment/providerCashPayment/providerCashPaymentBody.tsx",
-    "explorer/explorer/leaderboard/activity/activityTypeData.tsx",
-    "strat/strat/reporting/adPerformance/adImpressionsChart.tsx",
-];
 
 const extractFromFile = (filename) =>  {
     const module = swc
@@ -161,12 +108,10 @@ const extractFromFile = (filename) =>  {
         isModule: true,
       });
 
-  const visitor = new MyVisitor();
-  visitor.visitProgram(module);
+    const visitor = new ExtractVisitor();
+    visitor.visitProgram(module);
 
-    return visitor.translatableStrings;
+    return visitor.getCleanedStrings();
 };
 
 module.exports = { extractFromFile };
-
-// console.log(extractFromFile('horizontal/horizontal/savedSearches/savedSearchesCardFilters.tsx'));
